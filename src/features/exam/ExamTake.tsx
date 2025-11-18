@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag } from 'lucide-react';
+import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag, Eye } from 'lucide-react';
+import Button from '../../components/ui/Button';
 import { mockExams } from '../../data/mockData';
-import { Exam, Question } from '../../types';
+import { Exam, Question, Result } from '../../types';
+import { useUserStore } from '../../store/userStore';
 
 export default function ExamTake() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useUserStore();
   const [exam, setExam] = useState<Exam | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,23 +17,71 @@ export default function ExamTake() {
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
 
   const handleSubmit = useCallback(() => {
-    if (exam) {
-      navigate(`/results/${exam.id}`);
-    }
-  }, [navigate, exam]);
+    if (!exam || !user) return;
+
+    let score = 0;
+    let correctAnswers = 0;
+    const userAnswers: number[] = [];
+
+    questions.forEach((q) => {
+      const answerIndex = answers[q.id];
+      userAnswers.push(answerIndex);
+      if (answerIndex !== undefined && answerIndex === q.correctAnswer) {
+        score += q.points;
+        correctAnswers++;
+      }
+    });
+
+    const totalScore = questions.reduce((acc, q) => acc + q.points, 0);
+    const percentage = Math.round((score / totalScore) * 100);
+    const passed = percentage >= exam.passingScore;
+
+    const newResult: Result = {
+      id: new Date().toISOString(),
+      examId: exam.id,
+      userId: user.id,
+      score,
+      totalScore,
+      percentage,
+      passed,
+      completedAt: new Date().toISOString(),
+      timeSpent: Math.floor((exam.duration * 60 - timeLeft) / 60),
+      answers: userAnswers,
+      correctAnswers,
+    };
+
+    localStorage.removeItem(`examState-${id}`);
+    navigate(`/results/${newResult.id}`, { state: { result: newResult, exam } });
+  }, [exam, user, questions, answers, timeLeft, navigate, id]);
 
   useEffect(() => {
     const examData = mockExams.find(e => e.id === id);
     if (examData) {
       setExam(examData);
       setQuestions(examData.questions || []);
-      setTimeLeft(examData.duration * 60);
+
+      const savedState = localStorage.getItem(`examState-${id}`);
+      if (savedState) {
+        const { currentQuestion, answers, timeLeft } = JSON.parse(savedState);
+        setCurrentQuestion(currentQuestion);
+        setAnswers(answers);
+        setTimeLeft(timeLeft);
+      } else {
+        setTimeLeft(examData.duration * 60);
+      }
     }
     setLoading(false);
   }, [id]);
+
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem(`examState-${id}`, JSON.stringify({ currentQuestion, answers, timeLeft }));
+    }
+  }, [id, currentQuestion, answers, timeLeft, loading]);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -85,6 +136,30 @@ export default function ExamTake() {
   const answeredCount = Object.keys(answers).length;
   const progress = (answeredCount / questions.length) * 100;
 
+  if (showReview) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <h1 className="text-3xl font-bold mb-8">مرور آزمون</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {questions.map((q, i) => (
+            <div key={q.id} className="bg-white p-4 rounded-lg shadow-md">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="font-bold">سوال {i + 1}</h2>
+                {flaggedQuestions.has(i) && <Flag className="w-5 h-5 text-yellow-500" />}
+              </div>
+              <p className="mb-4">{q.text}</p>
+              <p>پاسخ شما: {answers[q.id] !== undefined ? q.options?.[answers[q.id]] : 'پاسخ نداده اید'}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex justify-center gap-4">
+          <Button onClick={() => setShowReview(false)}>بازگشت به آزمون</Button>
+          <Button onClick={() => setShowSubmitConfirm(true)} variant="primary">ثبت نهایی</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="sticky top-0 z-10 bg-white shadow-md">
@@ -100,6 +175,13 @@ export default function ExamTake() {
                 <Clock className="w-5 h-5" />
                 <span className="font-bold text-lg">{formatTime(timeLeft)}</span>
               </div>
+
+              <button
+                onClick={() => setShowReview(true)}
+                className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-bold"
+              >
+                <Eye className="w-5 h-5" />
+              </button>
 
               <button
                 onClick={() => setShowSubmitConfirm(true)}
