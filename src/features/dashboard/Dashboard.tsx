@@ -1,48 +1,21 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Trophy, Clock, Star, Target, Award, Calendar, ChevronLeft } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { getExams, getResults } from '../../services/api';
-import { Exam, Result } from '../../types';
+import { mockExams, mockResults } from '../../data/mockData';
 import { useUserStore } from '../../store/userStore';
 
 export default function Dashboard() {
   const { user } = useUserStore();
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [results, setResults] = useState<Result[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-      try {
-        const [examData, resultData] = await Promise.all([
-          getExams(),
-          getResults(user.id),
-        ]);
-        setExams(examData);
-        setResults(resultData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  if (loading) return <div>Loading...</div>;
-
-  const recentExams = exams.slice(0, 3);
-  const recentResults = results.slice(0, 3).map((r) => ({
+  const recentExams = mockExams.slice(0, 3);
+  const recentResults = mockResults.slice(0, 3).map((r) => ({
     ...r,
-    exam: exams.find((e) => e.id === r.examId),
+    exam: mockExams.find((e) => e.id === r.examId),
   }));
 
   const stats = [
-    { icon: BookOpen, label: 'آزمون‌های شرکت شده', value: results.length, color: 'from-blue-500 to-blue-600' },
-    { icon: Trophy, label: 'گواهینامه‌های دریافتی', value: results.filter(r => r.passed).length, color: 'from-green-500 to-green-600' },
-    { icon: Star, label: 'میانگین نمرات', value: `${Math.round(results.reduce((acc, r) => acc + r.percentage, 0) / results.length) || 0}%`, color: 'from-yellow-500 to-yellow-600' },
+    { icon: BookOpen, label: 'آزمون‌های شرکت شده', value: mockResults.length, color: 'from-blue-500 to-blue-600' },
+    { icon: Trophy, label: 'گواهینامه‌های دریافتی', value: mockResults.filter(r => r.passed).length, color: 'from-green-500 to-green-600' },
+    { icon: Star, label: 'میانگین نمرات', value: `${Math.round(mockResults.reduce((acc, r) => acc + r.percentage, 0) / mockResults.length) || 0}%`, color: 'from-yellow-500 to-yellow-600' },
     { icon: Target, label: 'امتیاز کلی', value: '۱,۲۵۰', color: 'from-purple-500 to-purple-600' }
   ];
 
@@ -64,12 +37,12 @@ export default function Dashboard() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <img
-              src={user?.user_metadata.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200'}
-              alt={user?.user_metadata.full_name}
+              src={user?.avatar || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200'}
+              alt={user?.name}
               className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
             />
             <div className="text-center md:text-right">
-              <h1 className="text-4xl font-bold mb-2">{user?.user_metadata.full_name}</h1>
+              <h1 className="text-4xl font-bold mb-2">{user?.name}</h1>
               <p className="text-primary-100 mb-2">{user?.email}</p>
             </div>
           </div>

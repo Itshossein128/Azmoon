@@ -2,15 +2,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, User, LogIn, BookOpen, Trophy, Home, Search, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useUserStore } from '../../store/userStore';
-import { supabase } from '../../services/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useUserStore();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    logout();
     navigate('/login');
   };
 
@@ -51,7 +52,7 @@ export default function Header() {
               <>
                 <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
                   <User className="w-4 h-4" />
-                  <span>{user.user_metadata.full_name || user.email}</span>
+                  <span>{user.name || user.email}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -103,7 +104,7 @@ export default function Header() {
                   <>
                     <Link to="/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
                       <User className="w-4 h-4" />
-                      <span>{user.user_metadata.full_name || user.email}</span>
+                      <span>{user.name || user.email}</span>
                     </Link>
                     <button
                       onClick={handleLogout}

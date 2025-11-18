@@ -1,35 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Clock, BookOpen, Users, Star, ChevronDown } from 'lucide-react';
-import { getExams } from '../../services/api';
+import { mockExams, mockCategories } from '../../data/mockData';
 import { Exam } from '../../types';
 
 export default function ExamList() {
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('همه');
   const [selectedLevel, setSelectedLevel] = useState('همه');
   const [sortBy, setSortBy] = useState('محبوبیت');
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    const fetchExams = async () => {
-      try {
-        const data = await getExams();
-        setExams(data);
-      } catch {
-        setError('Failed to fetch exams.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExams();
-  }, []);
-
-  const filteredExams = exams.filter((exam: Exam) => {
+  const filteredExams = mockExams.filter((exam: Exam) => {
     const matchesSearch = exam.title.includes(searchTerm) || exam.description.includes(searchTerm);
     const matchesCategory = selectedCategory === 'همه' || exam.category === selectedCategory;
     const matchesLevel = selectedLevel === 'همه' || exam.level === selectedLevel;
@@ -51,15 +33,12 @@ export default function ExamList() {
     }
   });
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">آزمون‌های آنلاین</h1>
-          <p className="text-primary-100 text-lg">بیش از {exams.length} آزمون متنوع در دسته‌بندی‌های مختلف</p>
+          <p className="text-primary-100 text-lg">بیش از {mockExams.length} آزمون متنوع در دسته‌بندی‌های مختلف</p>
         </div>
       </div>
 
@@ -93,7 +72,9 @@ export default function ExamList() {
                 className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="همه">همه دسته‌ها</option>
-                {/* Add categories from API if available */}
+                {mockCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                ))}
               </select>
 
               <select
@@ -128,7 +109,9 @@ export default function ExamList() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="همه">همه دسته‌ها</option>
-                {/* Add categories from API if available */}
+                {mockCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                ))}
               </select>
 
               <select

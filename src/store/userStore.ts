@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from '@supabase/supabase-js';
+import { User } from '../types';
 
 interface UserState {
   user: User | null;
@@ -8,5 +8,5 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
-  setUser: (user: User | null) => set({ user }),
+  setUser: (user) => set({ user }),
 }));

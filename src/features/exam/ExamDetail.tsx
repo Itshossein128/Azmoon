@@ -1,33 +1,10 @@
-import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Clock, BookOpen, Users, Star, Award, TrendingUp, CheckCircle, Calendar, User as UserIcon } from 'lucide-react';
-import { getExamById } from '../../services/api';
-import { Exam } from '../../types';
+import { mockExams } from '../../data/mockData';
 
 export default function ExamDetail() {
   const { id } = useParams<{ id: string }>();
-  const [exam, setExam] = useState<Exam | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchExam = async () => {
-      if (!id) return;
-      try {
-        const data = await getExamById(id);
-        setExam(data);
-      } catch {
-        setError('Failed to fetch exam details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExam();
-  }, [id]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  const exam = mockExams.find(e => e.id === id);
 
   if (!exam) {
     return (

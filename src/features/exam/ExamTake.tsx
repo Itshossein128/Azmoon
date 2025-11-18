@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag } from 'lucide-react';
-import { getExamById } from '../../services/api';
+import { mockExams } from '../../data/mockData';
 import { Exam, Question } from '../../types';
 
 export default function ExamTake() {
@@ -23,22 +23,13 @@ export default function ExamTake() {
   }, [navigate, exam]);
 
   useEffect(() => {
-    const fetchExam = async () => {
-      if (!id) return;
-      try {
-        const examData = await getExamById(id);
-        setExam(examData);
-        // Assuming questions are part of the exam data
-        setQuestions(examData.questions || []);
-        setTimeLeft(examData.duration * 60);
-      } catch (error) {
-        console.error('Failed to fetch exam:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchExam();
+    const examData = mockExams.find(e => e.id === id);
+    if (examData) {
+      setExam(examData);
+      setQuestions(examData.questions || []);
+      setTimeLeft(examData.duration * 60);
+    }
+    setLoading(false);
   }, [id]);
 
   useEffect(() => {

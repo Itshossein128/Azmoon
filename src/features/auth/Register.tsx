@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, BookOpen, UserPlus } from 'lucide-react';
-import { supabase } from '../../services/supabase';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,8 +15,9 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -25,23 +26,18 @@ export default function Register() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
-        },
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
+    // Mock registration
+    setTimeout(() => {
+      login({
+        id: '1',
+        name,
+        email,
+        role: 'student',
+        registeredAt: new Date().toISOString(),
+      });
       navigate('/');
-    }
-
-    setLoading(false);
+      setLoading(false);
+    }, 1000);
   };
 
   return (

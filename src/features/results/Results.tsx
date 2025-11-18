@@ -1,41 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Calendar, Clock, CheckCircle, XCircle, Award, Download, Share2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { getResults, getExams } from '../../services/api';
-import { Result, Exam } from '../../types';
-import { useUserStore } from '../../store/userStore';
+import { mockResults, mockExams } from '../../data/mockData';
 
 export default function Results() {
-  const { user } = useUserStore();
-  const [results, setResults] = useState<Result[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-      try {
-        const [resultData, examData] = await Promise.all([
-          getResults(user.id),
-          getExams(),
-        ]);
-        setResults(resultData);
-        setExams(examData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  if (loading) return <div>Loading...</div>;
-
-  const resultsWithExams = results.map(result => ({
+  const results = mockResults.map(result => ({
     ...result,
-    exam: exams.find(e => e.id === result.examId)
+    exam: mockExams.find(e => e.id === result.examId)
   }));
 
   const totalExams = results.length;
@@ -83,7 +53,7 @@ export default function Results() {
           </div>
 
           <div className="h-64 flex items-end justify-between gap-4">
-            {resultsWithExams.slice(0, 7).map((result, index) => {
+            {results.slice(0, 7).map((result, index) => {
               const height = (result.percentage / 100) * 100;
               return (
                 <div key={index} className="flex-1 flex flex-col items-center">
@@ -124,7 +94,7 @@ export default function Results() {
             </div>
           </div>
 
-          {resultsWithExams.map((result) => (
+          {results.map((result) => (
             <div key={result.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-6">
@@ -159,7 +129,7 @@ export default function Results() {
                       <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                         <span>نمره کسب شده</span>
                         <span className="font-bold text-gray-800">
-                          {result.score} از {result.exam?.totalQuestions ? result.exam.totalQuestions * (result.exam?.questions[0]?.points || 2) : 0}
+                          {result.score} از {result.totalScore}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-3">
