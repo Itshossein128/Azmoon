@@ -1,0 +1,182 @@
+import { Exam, Category, ExamResult } from '../types';
+
+export const mockExams: Exam[] = [
+  {
+    id: '1',
+    title: 'آزمون جامع زبان انگلیسی - سطح پیشرفته',
+    description: 'این آزمون جامع شامل تمامی مهارت‌های زبان انگلیسی از جمله گرامر، واژگان، خواندن و درک مطلب می‌باشد.',
+    category: 'زبان',
+    level: 'سخت',
+    duration: 90,
+    totalQuestions: 50,
+    passingScore: 70,
+    price: 0,
+    imageUrl: 'https://images.pexels.com/photos/267669/pexels-photo-267669.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'دکتر احمد محمدی',
+    participants: 1250,
+    rating: 4.8,
+    startDate: '2024-01-15',
+    endDate: '2024-12-31',
+    tags: ['انگلیسی', 'تافل', 'آیلتس']
+  },
+  {
+    id: '2',
+    title: 'آزمون ریاضی عمومی - مقدماتی',
+    description: 'آزمون جامع ریاضیات پایه شامل جبر، هندسه و آمار برای دانش‌آموزان مقطع متوسطه',
+    category: 'ریاضی',
+    level: 'آسان',
+    duration: 60,
+    totalQuestions: 30,
+    passingScore: 60,
+    price: 50000,
+    imageUrl: 'https://images.pexels.com/photos/3729557/pexels-photo-3729557.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'مهندس سارا احمدی',
+    participants: 890,
+    rating: 4.5,
+    tags: ['ریاضی', 'جبر', 'هندسه']
+  },
+  {
+    id: '3',
+    title: 'آزمون برنامه‌نویسی جاوااسکریپت',
+    description: 'ارزیابی مهارت‌های برنامه‌نویسی جاوااسکریپت از مبتدی تا پیشرفته',
+    category: 'برنامه‌نویسی',
+    level: 'متوسط',
+    duration: 120,
+    totalQuestions: 40,
+    passingScore: 65,
+    price: 150000,
+    imageUrl: 'https://images.pexels.com/photos/577585/pexels-photo-577585.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'علی رضایی',
+    participants: 2100,
+    rating: 4.9,
+    tags: ['JavaScript', 'React', 'Node.js']
+  },
+  {
+    id: '4',
+    title: 'آزمون شیمی دوره متوسطه',
+    description: 'آزمون جامع شیمی شامل شیمی آلی، معدنی و فیزیک',
+    category: 'علوم',
+    level: 'متوسط',
+    duration: 75,
+    totalQuestions: 35,
+    passingScore: 60,
+    price: 75000,
+    imageUrl: 'https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'دکتر مریم کریمی',
+    participants: 650,
+    rating: 4.6,
+    tags: ['شیمی', 'علوم تجربی']
+  },
+  {
+    id: '5',
+    title: 'آزمون ادبیات فارسی و دستور زبان',
+    description: 'ارزیابی دانش ادبیات فارسی، دستور زبان و تاریخ ادبیات',
+    category: 'هنر',
+    level: 'متوسط',
+    duration: 90,
+    totalQuestions: 45,
+    passingScore: 70,
+    price: 100000,
+    imageUrl: 'https://images.pexels.com/photos/256455/pexels-photo-256455.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'دکتر حسین صادقی',
+    participants: 780,
+    rating: 4.7,
+    tags: ['ادبیات', 'فارسی', 'شعر']
+  },
+  {
+    id: '6',
+    title: 'آزمون فیزیک پیشرفته',
+    description: 'آزمون تخصصی فیزیک شامل مکانیک، الکتریسیته و مغناطیس',
+    category: 'علوم',
+    level: 'سخت',
+    duration: 100,
+    totalQuestions: 40,
+    passingScore: 75,
+    price: 120000,
+    imageUrl: 'https://images.pexels.com/photos/714698/pexels-photo-714698.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'دکتر رضا نوری',
+    participants: 450,
+    rating: 4.8,
+    tags: ['فیزیک', 'مکانیک']
+  },
+  {
+    id: '7',
+    title: 'آزمون پایتون برای علم داده',
+    description: 'ارزیابی مهارت‌های پایتون، پانداس، نامپای و تحلیل داده',
+    category: 'برنامه‌نویسی',
+    level: 'سخت',
+    duration: 150,
+    totalQuestions: 55,
+    passingScore: 70,
+    price: 200000,
+    imageUrl: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'دکتر محمد حسینی',
+    participants: 1600,
+    rating: 4.9,
+    tags: ['Python', 'Data Science', 'ML']
+  },
+  {
+    id: '8',
+    title: 'آزمون زبان آلمانی مقدماتی',
+    description: 'آزمون جامع زبان آلمانی سطح A1 و A2',
+    category: 'زبان',
+    level: 'آسان',
+    duration: 60,
+    totalQuestions: 40,
+    passingScore: 60,
+    price: 90000,
+    imageUrl: 'https://images.pexels.com/photos/301448/pexels-photo-301448.jpeg?auto=compress&cs=tinysrgb&w=800',
+    instructor: 'خانم الهام رحیمی',
+    participants: 320,
+    rating: 4.4,
+    tags: ['آلمانی', 'زبان']
+  }
+];
+
+export const mockCategories: Category[] = [
+  { id: '1', name: 'زبان', icon: '🌐', count: 245 },
+  { id: '2', name: 'ریاضی', icon: '🔢', count: 189 },
+  { id: '3', name: 'برنامه‌نویسی', icon: '💻', count: 456 },
+  { id: '4', name: 'علوم', icon: '🔬', count: 178 },
+  { id: '5', name: 'هنر', icon: '🎨', count: 134 },
+  { id: '6', name: 'تاریخ', icon: '📚', count: 98 }
+];
+
+export const mockResults: ExamResult[] = [
+  {
+    id: '1',
+    examId: '1',
+    userId: 'user1',
+    score: 42,
+    totalScore: 50,
+    percentage: 84,
+    passed: true,
+    completedAt: '2024-01-20T14:30:00',
+    timeSpent: 85,
+    answers: []
+  },
+  {
+    id: '2',
+    examId: '3',
+    userId: 'user1',
+    score: 35,
+    totalScore: 40,
+    percentage: 87.5,
+    passed: true,
+    completedAt: '2024-01-18T10:15:00',
+    timeSpent: 110,
+    answers: []
+  },
+  {
+    id: '3',
+    examId: '2',
+    userId: 'user1',
+    score: 18,
+    totalScore: 30,
+    percentage: 60,
+    passed: true,
+    completedAt: '2024-01-15T16:45:00',
+    timeSpent: 58,
+    answers: []
+  }
+];
