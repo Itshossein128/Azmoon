@@ -1,73 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag } from 'lucide-react';
-import { mockExams } from '../data/mockData';
-import { Question } from '../types';
-
-const mockQuestions: Question[] = [
-  {
-    id: '1',
-    examId: '1',
-    text: 'کدام یک از موارد زیر یک فعل کمکی در زبان انگلیسی است؟',
-    type: 'multiple-choice',
-    options: ['Run', 'Have', 'Book', 'Student'],
-    correctAnswer: 1,
-    points: 2
-  },
-  {
-    id: '2',
-    examId: '1',
-    text: 'جمله "She ___ to school every day" با کدام فعل کامل می‌شود؟',
-    type: 'multiple-choice',
-    options: ['go', 'goes', 'going', 'gone'],
-    correctAnswer: 1,
-    points: 2
-  },
-  {
-    id: '3',
-    examId: '1',
-    text: 'کلمه "Beautiful" چه نوع کلمه‌ای است؟',
-    type: 'multiple-choice',
-    options: ['اسم', 'فعل', 'صفت', 'قید'],
-    correctAnswer: 2,
-    points: 2
-  },
-  {
-    id: '4',
-    examId: '1',
-    text: 'Past Simple زمان "eat" چیست؟',
-    type: 'multiple-choice',
-    options: ['eated', 'ate', 'eaten', 'eating'],
-    correctAnswer: 1,
-    points: 2
-  },
-  {
-    id: '5',
-    examId: '1',
-    text: 'کدام جمله صحیح است؟',
-    type: 'multiple-choice',
-    options: [
-      'He don\'t like apples',
-      'He doesn\'t like apples',
-      'He doesn\'t likes apples',
-      'He not like apples'
-    ],
-    correctAnswer: 1,
-    points: 2
-  }
-];
+import { getExamById } from '../../services/api';
+import { Exam, Question } from '../../types';
 
 export default function ExamTake() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const exam = mockExams.find(e => e.id === id);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
-  const [timeLeft, setTimeLeft] = useState(exam ? exam.duration * 60 : 0);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
 
+  const handleSubmit = useCallback(() => {
+    if (exam) {
+      navigate(`/results/${exam.id}`);
+    }
+  }, [navigate, exam]);
+
   useEffect(() => {
+    const fetchExam = async () => {
+      if (!id) return;
+      try {
+        const examData = await getExamById(id);
+        setExam(examData);
+        // Assuming questions are part of the exam data
+        setQuestions(examData.questions || []);
+        setTimeLeft(examData.duration * 60);
+      } catch (error) {
+        console.error('Failed to fetch exam:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExam();
+  }, [id]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -80,7 +55,11 @@ export default function ExamTake() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [timeLeft, handleSubmit]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!exam) {
     return (
@@ -92,7 +71,6 @@ export default function ExamTake() {
     );
   }
 
-  const questions = mockQuestions;
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -101,10 +79,6 @@ export default function ExamTake() {
 
   const handleAnswer = (questionId: string, answerIndex: number) => {
     setAnswers({ ...answers, [questionId]: answerIndex });
-  };
-
-  const handleSubmit = () => {
-    navigate(`/results/${exam.id}`);
   };
 
   const toggleFlag = (index: number) => {
@@ -259,7 +233,7 @@ export default function ExamTake() {
               <div className="grid grid-cols-5 gap-2 mb-6">
                 {questions.map((_, index) => {
                   const questionId = questions[index].id;
-                  const isAnswered = answers.hasOwnProperty(questionId);
+                  const isAnswered = Object.prototype.hasOwnProperty.call(answers, questionId);
                   const isCurrent = index === currentQuestion;
                   const isFlagged = flaggedQuestions.has(index);
 

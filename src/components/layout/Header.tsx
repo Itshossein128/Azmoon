@@ -1,10 +1,18 @@
-import { Link } from 'react-router-dom';
-import { Menu, X, User, LogIn, BookOpen, Trophy, Home, Search } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, User, LogIn, BookOpen, Trophy, Home, Search, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useUserStore } from '../../store/userStore';
+import { supabase } from '../../services/supabase';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn] = useState(false);
+  const { user } = useUserStore();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -39,11 +47,20 @@ export default function Header() {
               <Search className="w-5 h-5" />
             </button>
 
-            {isLoggedIn ? (
-              <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                <User className="w-4 h-4" />
-                <span>پنل کاربری</span>
-              </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                  <User className="w-4 h-4" />
+                  <span>{user.user_metadata.full_name || user.email}</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>خروج</span>
+                </button>
+              </>
             ) : (
               <>
                 <Link to="/login" className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary-600 transition-colors">
@@ -82,11 +99,20 @@ export default function Header() {
               </Link>
 
               <div className="border-t pt-4 flex flex-col gap-3">
-                {isLoggedIn ? (
-                  <Link to="/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                    <User className="w-4 h-4" />
-                    <span>پنل کاربری</span>
-                  </Link>
+                {user ? (
+                  <>
+                    <Link to="/dashboard" className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                      <User className="w-4 h-4" />
+                      <span>{user.user_metadata.full_name || user.email}</span>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>خروج</span>
+                    </button>
+                  </>
                 ) : (
                   <>
                     <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-2 border border-primary-500 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors">

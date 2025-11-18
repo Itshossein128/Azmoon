@@ -1,9 +1,29 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Trophy, Users, Clock, Star, TrendingUp, CheckCircle, Award } from 'lucide-react';
-import { mockExams, mockCategories } from '../data/mockData';
+import { useEffect, useState } from 'react';
+import { getExams } from '../../services/api';
+import { Exam, Category } from '../../types';
 
 export default function Home() {
-  const featuredExams = mockExams.slice(0, 4);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const data = await getExams();
+        setExams(data);
+      } catch (error) {
+        console.error('Error fetching exams:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExams();
+  }, []);
+
+  const featuredExams = exams.slice(0, 4);
   const stats = [
     { icon: Users, label: 'دانشجویان فعال', value: '۱۵,۰۰۰+' },
     { icon: BookOpen, label: 'آزمون‌های متنوع', value: '۱,۲۰۰+' },
@@ -33,6 +53,17 @@ export default function Home() {
       description: 'دریافت نتایج آزمون بلافاصله پس از اتمام'
     }
   ];
+
+  const categories: Category[] = [
+    { id: '1', name: 'زبان انگلیسی', count: 50, icon: '🇬🇧' },
+    { id: '2', name: 'برنامه‌نویسی', count: 35, icon: '💻' },
+    { id: '3', name: 'ریاضیات', count: 42, icon: '📊' },
+    { id: '4', name: 'علوم تجربی', count: 28, icon: '🔬' },
+    { id: '5', name: 'تاریخ و جغرافیا', count: 18, icon: '🌍' },
+    { id: '6', name: 'هنر و موسیقی', count: 22, icon: '🎨' },
+  ];
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="bg-gray-50">
@@ -95,7 +126,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {mockCategories.map((category) => (
+            {categories.map((category) => (
               <Link
                 key={category.id}
                 to={`/exams?category=${category.name}`}

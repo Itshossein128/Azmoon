@@ -1,19 +1,36 @@
 import { useParams, Link } from 'react-router-dom';
 import { Trophy, Clock, CheckCircle, XCircle, Award, Download, Share2, ChevronRight, Target } from 'lucide-react';
-import { mockResults, mockExams } from '../data/mockData';
-
-const mockAnswerDetails = [
-  { questionNumber: 1, question: 'کدام یک از موارد زیر یک فعل کمکی در زبان انگلیسی است؟', userAnswer: 'Have', correctAnswer: 'Have', isCorrect: true, points: 2, earnedPoints: 2 },
-  { questionNumber: 2, question: 'جمله "She ___ to school every day" با کدام فعل کامل می‌شود؟', userAnswer: 'goes', correctAnswer: 'goes', isCorrect: true, points: 2, earnedPoints: 2 },
-  { questionNumber: 3, question: 'کلمه "Beautiful" چه نوع کلمه‌ای است؟', userAnswer: 'صفت', correctAnswer: 'صفت', isCorrect: true, points: 2, earnedPoints: 2 },
-  { questionNumber: 4, question: 'Past Simple زمان "eat" چیست؟', userAnswer: 'ate', correctAnswer: 'ate', isCorrect: true, points: 2, earnedPoints: 2 },
-  { questionNumber: 5, question: 'کدام جمله صحیح است؟', userAnswer: 'He doesn\'t like apples', correctAnswer: 'He doesn\'t like apples', isCorrect: true, points: 2, earnedPoints: 2 }
-];
+import { useEffect, useState } from 'react';
+import { getResultById, getExamById } from '../../services/api';
+import { Result, Exam } from '../../types';
 
 export default function ResultDetail() {
-  const { id } = useParams();
-  const result = mockResults.find(r => r.id === id);
-  const exam = result ? mockExams.find(e => e.id === result.examId) : null;
+  const { id } = useParams<{ id: string }>();
+  const [result, setResult] = useState<Result | null>(null);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!id) return;
+      try {
+        const resultData = await getResultById(id);
+        setResult(resultData);
+        if (resultData) {
+          const examData = await getExamById(resultData.examId);
+          setExam(examData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
 
   if (!result || !exam) {
     return (
@@ -28,8 +45,17 @@ export default function ResultDetail() {
     );
   }
 
-  const correctAnswers = mockAnswerDetails.filter(a => a.isCorrect).length;
-  const incorrectAnswers = mockAnswerDetails.length - correctAnswers;
+  const correctAnswers = result.correctAnswers;
+  const incorrectAnswers = exam.totalQuestions - correctAnswers;
+  const mockAnswerDetails = result.answers.map((a, i) => ({
+    questionNumber: i + 1,
+    question: exam.questions[i]?.text,
+    userAnswer: exam.questions[i]?.options?.[a],
+    correctAnswer: exam.questions[i]?.options?.[exam.questions[i]?.correctAnswer || 0],
+    isCorrect: a === exam.questions[i]?.correctAnswer,
+    points: exam.questions[i]?.points,
+    earnedPoints: a === exam.questions[i]?.correctAnswer ? exam.questions[i]?.points : 0
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -80,7 +106,7 @@ export default function ResultDetail() {
                   <p className="text-sm opacity-90">نمره کسب شده</p>
                 </div>
                 <div className="text-center p-4 bg-white/10 rounded-xl">
-                  <div className="text-3xl font-bold mb-1">{result.totalScore}</div>
+                  <div className="text-3xl font-bold mb-1">{exam.totalQuestions * (exam.questions[0]?.points || 2)}</div>
                   <p className="text-sm opacity-90">نمره کل</p>
                 </div>
               </div>
@@ -102,7 +128,7 @@ export default function ResultDetail() {
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(correctAnswers / mockAnswerDetails.length) * 100}%` }}></div>
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(correctAnswers / exam.totalQuestions) * 100}%` }}></div>
             </div>
           </div>
 
@@ -117,7 +143,7 @@ export default function ResultDetail() {
               </div>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(incorrectAnswers / mockAnswerDetails.length) * 100}%` }}></div>
+              <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(incorrectAnswers / exam.totalQuestions) * 100}%` }}></div>
             </div>
           </div>
 
