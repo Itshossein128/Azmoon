@@ -83,47 +83,47 @@ export default function ResultDetail() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-800">{correctAnswers}</div>
-                <p className="text-gray-600">پاسخ صحیح</p>
+                <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{correctAnswers}</div>
+                <p className="text-gray-600 dark:text-gray-400">پاسخ صحیح</p>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(correctAnswers / exam.totalQuestions) * 100}%` }}></div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-lg flex items-center justify-center">
                 <XCircle className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-800">{incorrectAnswers}</div>
-                <p className="text-gray-600">پاسخ نادرست</p>
+                <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{incorrectAnswers}</div>
+                <p className="text-gray-600 dark:text-gray-400">پاسخ نادرست</p>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(incorrectAnswers / exam.totalQuestions) * 100}%` }}></div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
                 <Clock className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-800">{result.timeSpent}</div>
-                <p className="text-gray-600">دقیقه</p>
+                <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{result.timeSpent}</div>
+                <p className="text-gray-600 dark:text-gray-400">دقیقه</p>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(result.timeSpent / exam.duration) * 100}%` }}></div>
             </div>
           </div>
@@ -131,39 +131,39 @@ export default function ResultDetail() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">تحلیل عملکرد</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">تحلیل عملکرد</h2>
 
               <div className="space-y-4 mb-6">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-700">دقت پاسخ‌دهی</span>
-                    <span className="font-bold text-gray-800">{result.percentage}%</span>
+                    <span className="text-gray-700 dark:text-gray-300">دقت پاسخ‌دهی</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-100">{result.percentage}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                     <div className="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full" style={{ width: `${result.percentage}%` }}></div>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-700">سرعت پاسخ‌دهی</span>
-                    <span className="font-bold text-gray-800">{Math.round((exam.duration - result.timeSpent) / exam.duration * 100)}%</span>
+                    <span className="text-gray-700 dark:text-gray-300">سرعت پاسخ‌دهی</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-100">{Math.round((exam.duration - result.timeSpent) / exam.duration * 100)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full" style={{ width: `${(exam.duration - result.timeSpent) / exam.duration * 100}%` }}></div>
                   </div>
                 </div>
               </div>
 
-              <div className={`p-4 rounded-lg ${result.passed ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+              <div className={`p-4 rounded-lg ${result.passed ? 'bg-green-50 border border-green-200 dark:bg-green-900/50 dark:border-green-800' : 'bg-red-50 border border-red-200 dark:bg-red-900/50 dark:border-red-800'}`}>
                 <div className="flex items-start gap-3">
                   <Target className={`w-6 h-6 ${result.passed ? 'text-green-600' : 'text-red-600'} flex-shrink-0 mt-1`} />
                   <div>
-                    <h3 className={`font-bold ${result.passed ? 'text-green-800' : 'text-red-800'} mb-1`}>
+                    <h3 className={`font-bold ${result.passed ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'} mb-1`}>
                       {result.passed ? 'تبریک!' : 'متاسفانه'}
                     </h3>
-                    <p className={`text-sm ${result.passed ? 'text-green-700' : 'text-red-700'} leading-relaxed`}>
+                    <p className={`text-sm ${result.passed ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'} leading-relaxed`}>
                       {result.passed
                         ? `شما با موفقیت در این آزمون قبول شدید و نمره ${result.percentage}% کسب کردید. برای دریافت گواهینامه به بخش پایین مراجعه کنید.`
                         : `برای قبولی در این آزمون به نمره ${exam.passingScore}% نیاز بود. شما ${result.percentage}% کسب کردید. می‌توانید دوباره در این آزمون شرکت کنید.`
@@ -174,8 +174,8 @@ export default function ResultDetail() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">بررسی تفصیلی سوالات</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">بررسی تفصیلی سوالات</h2>
 
               <div className="space-y-4">
                 {answerDetails.map((answer, index) => (
@@ -242,9 +242,9 @@ export default function ResultDetail() {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-6 sticky top-24 space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 sticky top-24 space-y-6">
               <div>
-                <h3 className="font-bold text-gray-800 mb-4">اقدامات</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-4">اقدامات</h3>
                 <div className="space-y-3">
                   {result.passed && (
                     <button className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-bold">
@@ -260,7 +260,7 @@ export default function ResultDetail() {
 
                   <Link
                     to={`/exams/${exam.id}`}
-                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-bold"
+                    className="w-full flex items-center justify-center gap-2 py-3 border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/50 transition-colors font-bold"
                   >
                     <Trophy className="w-5 h-5" />
                     <span>تلاش مجدد</span>
@@ -269,20 +269,20 @@ export default function ResultDetail() {
               </div>
 
               {result.passed && (
-                <div className="pt-6 border-t">
-                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl text-center">
+                <div className="pt-6 border-t dark:border-gray-700">
+                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/50 dark:to-yellow-800/50 p-6 rounded-xl text-center">
                     <Award className="w-16 h-16 text-yellow-600 mx-auto mb-3" />
-                    <h4 className="font-bold text-gray-800 mb-2">گواهینامه آماده است</h4>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">گواهینامه آماده است</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       شما می‌توانید گواهینامه دیجیتال این آزمون را دریافت کنید
                     </p>
                   </div>
                 </div>
               )}
 
-              <div className="pt-6 border-t">
-                <h4 className="font-bold text-gray-800 mb-3">توصیه‌های ما</h4>
-                <ul className="space-y-2 text-sm text-gray-700">
+              <div className="pt-6 border-t dark:border-gray-700">
+                <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-3">توصیه‌های ما</h4>
+                <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-primary-600 mt-1">•</span>
                     <span>نقاط ضعف خود را شناسایی کنید</span>

@@ -43,7 +43,7 @@ export default function ExamList() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -52,13 +52,13 @@ export default function ExamList() {
                 placeholder="جستجوی آزمون..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pr-12 pl-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               />
             </div>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="lg:hidden flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               <Filter className="w-5 h-5" />
               <span>فیلترها</span>
@@ -69,7 +69,7 @@ export default function ExamList() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="همه">همه دسته‌ها</option>
                 {mockCategories.map((cat) => (
@@ -80,7 +80,7 @@ export default function ExamList() {
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="همه">همه سطوح</option>
                 <option value="آسان">آسان</option>
@@ -91,7 +91,7 @@ export default function ExamList() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="محبوبیت">محبوب‌ترین</option>
                 <option value="امتیاز">بهترین امتیاز</option>
@@ -102,11 +102,11 @@ export default function ExamList() {
           </div>
 
           {showFilters && (
-            <div className="lg:hidden mt-4 pt-4 border-t space-y-3">
+            <div className="lg:hidden mt-4 pt-4 border-t dark:border-gray-700 space-y-3">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="همه">همه دسته‌ها</option>
                 {mockCategories.map((cat) => (
@@ -117,7 +117,7 @@ export default function ExamList() {
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="همه">همه سطوح</option>
                 <option value="آسان">آسان</option>
@@ -128,7 +128,7 @@ export default function ExamList() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
               >
                 <option value="محبوبیت">محبوب‌ترین</option>
                 <option value="امتیاز">بهترین امتیاز</option>
@@ -139,7 +139,7 @@ export default function ExamList() {
           )}
         </div>
 
-        <div className="mb-6 text-gray-600">
+        <div className="mb-6 text-gray-600 dark:text-gray-400">
           <p>نمایش {sortedExams.length} آزمون</p>
         </div>
 
@@ -148,7 +148,7 @@ export default function ExamList() {
             <Link
               key={exam.id}
               to={`/exams/${exam.id}`}
-              className="bg-white rounded-xl shadow-md overflow-hidden card-hover"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover"
             >
               <div className="relative h-48">
                 <img
@@ -156,7 +156,7 @@ export default function ExamList() {
                   alt={exam.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-sm font-bold text-primary-600">
+                <div className="absolute top-3 right-3 bg-white dark:bg-gray-700 px-3 py-1 rounded-full text-sm font-bold text-primary-600 dark:text-primary-400">
                   {exam.level}
                 </div>
                 {exam.price === 0 ? (
@@ -171,16 +171,16 @@ export default function ExamList() {
               </div>
 
               <div className="p-5">
-                <div className="text-sm text-gray-500 mb-2">{exam.category}</div>
-                <h3 className="font-bold text-gray-800 mb-3 line-clamp-2 h-12">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{exam.category}</div>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 h-12">
                   {exam.title}
                 </h3>
 
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                   {exam.description}
                 </p>
 
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     <span>{exam.duration} دقیقه</span>
@@ -191,12 +191,12 @@ export default function ExamList() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t">
+                <div className="flex items-center justify-between pt-3 border-t dark:border-gray-700">
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="font-bold text-gray-800">{exam.rating}</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-100">{exam.rating}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-600">
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                     <Users className="w-4 h-4" />
                     <span className="text-sm">{exam.participants.toLocaleString('fa-IR')}</span>
                   </div>
@@ -208,11 +208,11 @@ export default function ExamList() {
 
         {sortedExams.length === 0 && (
           <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">آزمونی یافت نشد</h3>
-            <p className="text-gray-600">لطفا فیلترها را تغییر دهید یا عبارت دیگری جستجو کنید</p>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">آزمونی یافت نشد</h3>
+            <p className="text-gray-600 dark:text-gray-400">لطفا فیلترها را تغییر دهید یا عبارت دیگری جستجو کنید</p>
           </div>
         )}
       </div>
