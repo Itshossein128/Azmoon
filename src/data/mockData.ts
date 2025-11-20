@@ -53,6 +53,58 @@ const mockQuestions: Question[] = [
   }
 ];
 
+const mockPythonQuestions: Question[] = [
+  {
+    id: 'p1',
+    examId: '2',
+    text: 'کدام نوع داده برای ذخیره مقادیر صحیح در پایتون استفاده می‌شود؟',
+    type: 'multiple-choice',
+    options: ['float', 'str', 'int', 'bool'],
+    correctAnswer: 2,
+    points: 3
+  },
+  {
+    id: 'p2',
+    examId: '2',
+    text: 'خروجی کد `print(len("hello"))` چیست؟',
+    type: 'multiple-choice',
+    options: ['5', '4', 'hello', 'Error'],
+    correctAnswer: 0,
+    points: 3
+  },
+  {
+    id: 'p3',
+    examId: '2',
+    text: 'کدام کلمه کلیدی برای تعریف یک تابع در پایتون استفاده می‌شود؟',
+    type: 'multiple-choice',
+    options: ['fun', 'def', 'function', 'define'],
+    correctAnswer: 1,
+    points: 4
+  }
+];
+
+const mockMathQuestions: Question[] = [
+  {
+    id: 'm1',
+    examId: '3',
+    text: 'مشتق تابع f(x) = x^2 چیست؟',
+    type: 'multiple-choice',
+    options: ['2x', 'x', 'x^3 / 3', '2'],
+    correctAnswer: 0,
+    points: 5
+  },
+  {
+    id: 'm2',
+    examId: '3',
+    text: 'حاصل انتگرال ∫(1)dx چیست؟',
+    type: 'multiple-choice',
+    options: ['x + C', '1 + C', '0', 'x^2 + C'],
+    correctAnswer: 0,
+    points: 5
+  }
+];
+
+
 export const mockExams: Exam[] = [
   {
     id: '1',
@@ -88,7 +140,7 @@ export const mockExams: Exam[] = [
     participants: 2300,
     rating: 4.9,
     tags: ['پایتون', 'مبانی', 'الگوریتم'],
-    questions: [],
+    questions: mockPythonQuestions,
   },
   {
     id: '3',
@@ -105,7 +157,7 @@ export const mockExams: Exam[] = [
     participants: 850,
     rating: 4.6,
     tags: ['ریاضی', 'دانشگاه', 'انتگرال'],
-    questions: [],
+    questions: mockMathQuestions,
   },
   {
     id: '4',

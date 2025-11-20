@@ -35,7 +35,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900">
+    <div>
       <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
