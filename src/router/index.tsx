@@ -9,6 +9,7 @@ import ResultDetail from '../features/results/ResultDetail';
 import Dashboard from '../features/dashboard/Dashboard';
 import Login from '../features/auth/Login';
 import Register from '../features/auth/Register';
+import ForgotPassword from '../features/auth/ForgotPassword';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
     children: [
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
+      { path: 'forgot-password', element: <ForgotPassword /> },
     ],
   },
 ]);
