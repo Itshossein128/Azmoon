@@ -8,7 +8,7 @@ export default function ExamDetail() {
 
   if (!exam) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">آزمون یافت نشد</h2>
           <Link to="/exams" className="text-primary-600 hover:text-primary-700">
@@ -35,7 +35,7 @@ export default function ExamDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

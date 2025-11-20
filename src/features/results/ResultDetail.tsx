@@ -8,7 +8,7 @@ export default function ResultDetail() {
 
   if (!result || !exam) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">نتیجه یافت نشد</h2>
           <Link to="/results" className="text-primary-600 hover:text-primary-700">
@@ -24,7 +24,7 @@ export default function ResultDetail() {
   const answerDetails: any[] = [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className={`${result.passed ? 'bg-gradient-to-br from-green-600 to-green-800' : 'bg-gradient-to-br from-red-600 to-red-800'} text-white py-12`}>
         <div className="container mx-auto px-4">
           <Link to="/results" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6">

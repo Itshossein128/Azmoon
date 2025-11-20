@@ -34,7 +34,7 @@ export default function ExamList() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">آزمون‌های آنلاین</h1>

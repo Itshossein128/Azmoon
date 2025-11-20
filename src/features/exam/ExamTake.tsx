@@ -105,7 +105,7 @@ export default function ExamTake() {
 
   if (!exam) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">آزمون یافت نشد</h2>
         </div>
@@ -115,7 +115,7 @@ export default function ExamTake() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             سوالی برای این آزمون یافت نشد.
@@ -150,7 +150,7 @@ export default function ExamTake() {
 
   if (showReview) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen p-8">
         <h1 className="text-3xl font-bold mb-8">مرور آزمون</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {questions.map((q, i) => (
@@ -173,7 +173,7 @@ export default function ExamTake() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="sticky top-0 z-10 bg-white shadow-md">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
