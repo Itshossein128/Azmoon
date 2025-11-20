@@ -1,18 +1,40 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, LogIn, BookOpen } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, LogIn, BookOpen } from 'lucide-react';
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    remember: false
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', formData);
+    setLoading(true);
+    setError(null);
+
+    // Mock authentication
+    setTimeout(() => {
+      if (email === 'test@test.com' && password === 'password') {
+        login({
+          id: '1',
+          name: 'Test User',
+          email,
+          role: 'student',
+          registeredAt: new Date().toISOString(),
+        });
+        navigate('/');
+      } else {
+        setError('Invalid email or password');
+      }
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -77,71 +99,50 @@ export default function Login() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-bold mb-2">
-                  آدرس ایمیل
-                </label>
-                <div className="relative">
-                  <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full pr-12 pl-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                    placeholder="example@email.com"
-                    dir="ltr"
-                    required
-                  />
-                </div>
+              <Input
+                label="آدرس ایمیل"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@email.com"
+                required
+              />
+
+              <div className="relative">
+                <Input
+                  label="رمز عبور"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="رمز عبور خود را وارد کنید"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
 
-              <div>
-                <label className="block text-gray-700 font-bold mb-2">
-                  رمز عبور
-                </label>
-                <div className="relative">
-                  <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full pr-12 pl-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                    placeholder="رمز عبور خود را وارد کنید"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
-                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                  />
-                  <span className="text-gray-700">مرا به خاطر بسپار</span>
-                </label>
-
                 <Link to="/forgot-password" className="text-primary-600 hover:text-primary-700 font-bold">
                   فراموشی رمز عبور
                 </Link>
               </div>
 
-              <button
+              <Button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all hover:scale-[1.02] shadow-lg"
+                variant="primary"
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2"
               >
+                {loading ? 'در حال ورود...' : 'ورود به حساب'}
                 <LogIn className="w-5 h-5" />
-                <span>ورود به حساب</span>
-              </button>
+              </Button>
 
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">

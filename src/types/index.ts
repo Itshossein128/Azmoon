@@ -24,6 +24,7 @@ export interface Exam {
   startDate?: string;
   endDate?: string;
   tags: string[];
+  questions: Question[];
 }
 
 export interface Question {
@@ -37,7 +38,7 @@ export interface Question {
   imageUrl?: string;
 }
 
-export interface ExamResult {
+export interface Result {
   id: string;
   examId: string;
   userId: string;
@@ -47,7 +48,8 @@ export interface ExamResult {
   passed: boolean;
   completedAt: string;
   timeSpent: number;
-  answers: UserAnswer[];
+  answers: number[];
+  correctAnswers: number;
 }
 
 export interface UserAnswer {

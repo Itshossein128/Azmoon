@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Trophy, Users, Clock, Star, TrendingUp, CheckCircle, Award } from 'lucide-react';
-import { mockExams, mockCategories } from '../data/mockData';
+import { mockExams, mockCategories } from '../../data/mockData';
 
 export default function Home() {
   const featuredExams = mockExams.slice(0, 4);
@@ -35,7 +35,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="bg-gray-50">
+    <div>
       <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -71,16 +71,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-2xl mb-4">
-                  <stat.icon className="w-8 h-8 text-primary-600" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-2xl mb-4">
+                  <stat.icon className="w-8 h-8 text-primary-600 dark:text-primary-400" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-2">{stat.value}</h3>
-                <p className="text-gray-600">{stat.label}</p>
+                <h3 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{stat.value}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -90,8 +90,8 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">دسته‌بندی آزمون‌ها</h2>
-            <p className="text-gray-600 text-lg">آزمون مورد نظر خود را انتخاب کنید</p>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">دسته‌بندی آزمون‌ها</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">آزمون مورد نظر خود را انتخاب کنید</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -99,22 +99,22 @@ export default function Home() {
               <Link
                 key={category.id}
                 to={`/exams?category=${category.name}`}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1 text-center"
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1 text-center"
               >
                 <div className="text-4xl mb-3">{category.icon}</div>
-                <h3 className="font-bold text-gray-800 mb-2">{category.name}</h3>
-                <p className="text-sm text-gray-500">{category.count} آزمون</p>
+                <h3 className="font-bold text-gray-800 dark:text-white mb-2">{category.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{category.count} آزمون</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">آزمون‌های پیشنهادی</h2>
-            <p className="text-gray-600 text-lg">محبوب‌ترین آزمون‌ها را امتحان کنید</p>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">آزمون‌های پیشنهادی</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">محبوب‌ترین آزمون‌ها را امتحان کنید</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -122,7 +122,7 @@ export default function Home() {
               <Link
                 key={exam.id}
                 to={`/exams/${exam.id}`}
-                className="bg-white rounded-xl shadow-md overflow-hidden card-hover"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover"
               >
                 <div className="relative h-48">
                   <img
@@ -141,12 +141,12 @@ export default function Home() {
                 </div>
 
                 <div className="p-5">
-                  <div className="text-sm text-gray-500 mb-2">{exam.category}</div>
-                  <h3 className="font-bold text-gray-800 mb-3 line-clamp-2 h-12">
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{exam.category}</div>
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 h-12">
                     {exam.title}
                   </h3>
 
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                  <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       <span>{exam.duration} دقیقه</span>
@@ -157,12 +157,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t">
+                  <div className="flex items-center justify-between pt-3 border-t dark:border-gray-700">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="font-bold text-gray-800">{exam.rating}</span>
+                      <span className="font-bold text-gray-800 dark:text-white">{exam.rating}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600">
+                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                       <Users className="w-4 h-4" />
                       <span className="text-sm">{exam.participants.toLocaleString('fa-IR')}</span>
                     </div>
@@ -186,21 +186,21 @@ export default function Home() {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">مزایای سامانه</h2>
-            <p className="text-gray-600 text-lg">چرا سامانه آزمون آنلاین را انتخاب کنیم؟</p>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">مزایای سامانه</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">چرا سامانه آزمون آنلاین را انتخاب کنیم؟</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all"
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all"
               >
                 <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center mb-4">
                   <feature.icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="font-bold text-lg text-gray-800 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-3">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>

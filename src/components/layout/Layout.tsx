@@ -1,17 +1,26 @@
-import { ReactNode } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 
-interface LayoutProps {
-  children: ReactNode;
-}
+export default function Layout() {
+  const location = useLocation();
 
-export default function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow">
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
       <Footer />
     </div>

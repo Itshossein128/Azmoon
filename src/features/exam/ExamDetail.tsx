@@ -1,14 +1,14 @@
 import { Link, useParams } from 'react-router-dom';
 import { Clock, BookOpen, Users, Star, Award, TrendingUp, CheckCircle, Calendar, User as UserIcon } from 'lucide-react';
-import { mockExams } from '../data/mockData';
+import { mockExams } from '../../data/mockData';
 
 export default function ExamDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const exam = mockExams.find(e => e.id === id);
 
   if (!exam) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">آزمون یافت نشد</h2>
           <Link to="/exams" className="text-primary-600 hover:text-primary-700">
@@ -35,7 +35,7 @@ export default function ExamDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -91,28 +91,28 @@ export default function ExamDetail() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-xl shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">اطلاعات آزمون</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">اطلاعات آزمون</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {examInfo.map((info, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                      <info.icon className="w-6 h-6 text-primary-600" />
+                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+                      <info.icon className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">{info.label}</p>
-                      <p className="font-bold text-gray-800">{info.value}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{info.label}</p>
+                      <p className="font-bold text-gray-800 dark:text-gray-100">{info.value}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               {exam.startDate && exam.endDate && (
-                <div className="mt-6 p-4 bg-primary-50 rounded-lg flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-primary-600" />
+                <div className="mt-6 p-4 bg-primary-50 dark:bg-primary-900/50 rounded-lg flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                   <div className="text-sm">
-                    <span className="font-bold text-gray-800">دوره برگزاری: </span>
-                    <span className="text-gray-700">
+                    <span className="font-bold text-gray-800 dark:text-gray-100">دوره برگزاری: </span>
+                    <span className="text-gray-700 dark:text-gray-300">
                       {new Date(exam.startDate).toLocaleDateString('fa-IR')} تا {new Date(exam.endDate).toLocaleDateString('fa-IR')}
                     </span>
                   </div>
@@ -120,21 +120,21 @@ export default function ExamDetail() {
               )}
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">مزایا و ویژگی‌ها</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">مزایا و ویژگی‌ها</h2>
               <ul className="space-y-4">
                 {benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{benefit}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{benefit}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">درباره این آزمون</h2>
-              <div className="prose max-w-none text-gray-700 leading-relaxed space-y-4">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">درباره این آزمون</h2>
+              <div className="prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
                 <p>
                   {exam.description}
                 </p>
@@ -151,19 +151,19 @@ export default function ExamDetail() {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 sticky top-24">
               <div className="text-center mb-6">
                 {exam.price === 0 ? (
                   <div>
                     <p className="text-3xl font-bold text-green-600 mb-2">رایگان</p>
-                    <p className="text-sm text-gray-600">بدون نیاز به پرداخت</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">بدون نیاز به پرداخت</p>
                   </div>
                 ) : (
                   <div>
-                    <p className="text-3xl font-bold text-gray-800 mb-2">
+                    <p className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                       {exam.price.toLocaleString('fa-IR')} تومان
                     </p>
-                    <p className="text-sm text-gray-600">قیمت شرکت در آزمون</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">قیمت شرکت در آزمون</p>
                   </div>
                 )}
               </div>
@@ -175,13 +175,13 @@ export default function ExamDetail() {
                 شروع آزمون
               </Link>
 
-              <button className="block w-full py-3 border-2 border-primary-600 text-primary-600 text-center font-bold rounded-xl hover:bg-primary-50 transition-colors">
+              <button className="block w-full py-3 border-2 border-primary-600 text-primary-600 text-center font-bold rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/50 transition-colors">
                 افزودن به علاقه‌مندی‌ها
               </button>
 
-              <div className="mt-6 pt-6 border-t space-y-4">
-                <h3 className="font-bold text-gray-800">این آزمون شامل:</h3>
-                <ul className="space-y-3 text-sm text-gray-700">
+              <div className="mt-6 pt-6 border-t dark:border-gray-700 space-y-4">
+                <h3 className="font-bold text-gray-800 dark:text-gray-100">این آزمون شامل:</h3>
+                <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>{exam.totalQuestions} سوال تستی</span>
