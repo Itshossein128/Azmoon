@@ -113,6 +113,18 @@ export default function ExamTake() {
     );
   }
 
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            سوالی برای این آزمون یافت نشد.
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
