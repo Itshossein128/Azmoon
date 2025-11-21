@@ -16,6 +16,7 @@ import PublicRoute from './PublicRoute';
 import AdminRoute from './AdminRoute';
 import AdminLayout from '../features/admin/AdminLayout';
 import AdminDashboard from '../features/admin/AdminDashboard';
+import UserManagement from '../features/admin/UserManagement';
 
 export const router = createBrowserRouter([
   {
@@ -58,7 +59,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <AdminDashboard /> },
-          // Add other admin routes here, e.g., for users, exams, settings
+          { path: 'users', element: <UserManagement /> },
         ],
       },
     ],

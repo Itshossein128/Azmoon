@@ -1,4 +1,4 @@
-import { Exam, Category, Result, Question } from '../types';
+import { User, Exam, Category, Result, Question } from '../types';
 
 const mockQuestions: Question[] = [
   {
@@ -295,4 +295,39 @@ export const mockResults: Result[] = [
     answers: [],
     correctAnswers: 0,
   }
+];
+
+export const mockUsers: User[] = [
+  {
+    id: '1',
+    name: 'ادمین',
+    email: 'admin@test.com',
+    role: 'admin',
+    registeredAt: '1402/10/01',
+    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+  },
+  {
+    id: '2',
+    name: 'کاربر تستی',
+    email: 'test@test.com',
+    role: 'student',
+    registeredAt: '1403/01/15',
+    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+  },
+  {
+    id: '3',
+    name: 'استاد رضایی',
+    email: 'teacher@test.com',
+    role: 'teacher',
+    registeredAt: '1402/11/20',
+    avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+  },
+    {
+    id: '4',
+    name: 'دانشجو جدید',
+    email: 'student@test.com',
+    role: 'student',
+    registeredAt: '1403/02/05',
+    avatar: 'https://i.pravatar.cc/150?u=a048581f4e29026701d',
+  },
 ];
