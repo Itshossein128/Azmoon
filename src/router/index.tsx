@@ -13,6 +13,9 @@ import Register from '../features/auth/Register';
 import ForgotPassword from '../features/auth/ForgotPassword';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
+import AdminRoute from './AdminRoute';
+import AdminLayout from '../features/admin/AdminLayout';
+import AdminDashboard from '../features/admin/AdminDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +48,19 @@ export const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
+    ],
+  },
+  {
+    path: '/admin',
+    element: <AdminRoute />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          // Add other admin routes here, e.g., for users, exams, settings
+        ],
+      },
     ],
   },
 ]);

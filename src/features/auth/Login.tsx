@@ -26,10 +26,10 @@ export default function Login() {
           id: '1',
           name: 'Test User',
           email,
-          role: 'student',
+          role: 'admin',
           registeredAt: new Date().toISOString(),
         });
-        navigate('/');
+        navigate('/admin');
       } else {
         setError('Invalid email or password');
       }
