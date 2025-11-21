@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search, Filter, Clock, BookOpen, Users, Star, ChevronDown } from 'lucide-react';
 import { mockExams, mockCategories } from '../../data/mockData';
 import { Exam } from '../../types';
@@ -10,9 +10,17 @@ export default function ExamList() {
   const [selectedLevel, setSelectedLevel] = useState('همه');
   const [sortBy, setSortBy] = useState('محبوبیت');
   const [showFilters, setShowFilters] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const query = searchParams.get('query');
+    if (query) {
+      setSearchTerm(query);
+    }
+  }, [searchParams]);
 
   const filteredExams = mockExams.filter((exam: Exam) => {
-    const matchesSearch = exam.title.includes(searchTerm) || exam.description.includes(searchTerm);
+    const matchesSearch = exam.title.toLowerCase().includes(searchTerm.toLowerCase()) || exam.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'همه' || exam.category === selectedCategory;
     const matchesLevel = selectedLevel === 'همه' || exam.level === selectedLevel;
     return matchesSearch && matchesCategory && matchesLevel;

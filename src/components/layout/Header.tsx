@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu as MenuIcon, X, User, LogIn, BookOpen, Trophy, Home, Search, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu as MenuIcon, X, User, LogIn, BookOpen, Trophy, Home, LogOut, Sun, Moon } from 'lucide-react';
 import { useState, Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
+import SearchComponent from '../features/Search';
 import { useUserStore } from '../../store/userStore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -47,9 +48,7 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" aria-label="Search">
-              <Search className="w-5 h-5" />
-            </button>
+            <SearchComponent />
 
             <button onClick={toggleTheme} className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
