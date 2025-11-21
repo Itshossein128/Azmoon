@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogIn, BookOpen, Trophy, Home, Search, LogOut, Sun, Moon } from 'lucide-react';
-import { useState } from 'react';
+import { Menu as MenuIcon, X, User, LogIn, BookOpen, Trophy, Home, LogOut, Sun, Moon } from 'lucide-react';
+import { useState, Fragment } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import SearchComponent from '../features/Search';
 import { useUserStore } from '../../store/userStore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -46,29 +48,72 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" aria-label="Search">
-              <Search className="w-5 h-5" />
-            </button>
+            <SearchComponent />
 
             <button onClick={toggleTheme} className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
 
             {user ? (
-              <>
-                <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors" aria-label="Dashboard">
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors" aria-label="User menu">
                   <User className="w-4 h-4" />
                   <span>{user.name || user.email}</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                  aria-label="Logout"
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span>خروج</span>
-                </button>
-              </>
+                  <Menu.Items className="absolute left-0 mt-2 w-48 origin-top-left bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="p-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/dashboard"
+                            className={`${
+                              active ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          >
+                            داشبورد
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/profile"
+                            className={`${
+                              active ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          >
+                            پروفایل
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </div>
+                    <div className="p-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={handleLogout}
+                            className={`${
+                              active ? 'bg-red-50 dark:bg-red-900/50 text-red-700 dark:text-red-300' : 'text-gray-900 dark:text-white'
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          >
+                            <LogOut className="w-4 h-4 mr-2" />
+                            خروج
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             ) : (
               <>
                 <Link to="/login" className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
@@ -88,7 +133,7 @@ export default function Header() {
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
           </button>
         </div>
 
