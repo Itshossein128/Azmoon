@@ -1,7 +1,7 @@
 import { useState, useMemo, FormEvent } from 'react';
 import { mockExams } from '../../data/mockData';
-import { Exam } from '../../types';
-import { Search, PlusCircle, Eye, FilePenLine, Trash2 } from 'lucide-react';
+import { Exam, Question } from '../../types';
+import { Search, PlusCircle, Eye, FilePenLine, Trash2, BookCopy } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import Modal from '../../components/ui/Modal';
@@ -20,6 +20,11 @@ export default function ExamManagement() {
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingExamId, setDeletingExamId] = useState<string | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewingExam, setViewingExam] = useState<Exam | null>(null);
+  const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
+  const [managingQuestionsExam, setManagingQuestionsExam] = useState<Exam | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
   const filteredExams = useMemo(() => {
     return exams
@@ -164,9 +169,10 @@ export default function ExamManagement() {
                 <td className="p-4">{exam.duration}</td>
                 <td className="p-4">
                   <div className="flex gap-3">
-                    <button className="text-gray-500 hover:text-blue-500 transition-colors"><Eye size={20} /></button>
+                    <button onClick={() => { setViewingExam(exam); setIsViewModalOpen(true); }} className="text-gray-500 hover:text-blue-500 transition-colors"><Eye size={20} /></button>
                     <button onClick={() => { setEditingExam(exam); setIsEditModalOpen(true); }} className="text-gray-500 hover:text-yellow-500 transition-colors"><FilePenLine size={20} /></button>
                     <button onClick={() => { setDeletingExamId(exam.id); setIsDeleteModalOpen(true); }} className="text-gray-500 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
+                    <button onClick={() => { setManagingQuestionsExam(exam); setIsQuestionsModalOpen(true); }} className="text-gray-500 hover:text-green-500 transition-colors"><BookCopy size={20} /></button>
                   </div>
                 </td>
               </tr>
@@ -233,6 +239,70 @@ export default function ExamManagement() {
           </div>
         </div>
       </Modal>
+
+      {/* View Exam Modal */}
+      {viewingExam && (
+        <Modal isOpen={isViewModalOpen} onClose={() => { setIsViewModalOpen(false); setViewingExam(null); }} title="مشاهده جزئیات آزمون">
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold">عنوان آزمون</h3>
+              <p>{viewingExam.title}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">دسته‌بندی</h3>
+              <p>{viewingExam.category}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">سطح</h3>
+              <p>{viewingExam.level}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">تعداد سوالات</h3>
+              <p>{viewingExam.totalQuestions}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold">زمان (دقیقه)</h3>
+              <p>{viewingExam.duration}</p>
+            </div>
+            <div className="flex justify-end pt-4">
+              <Button variant="secondary" onClick={() => { setIsViewModalOpen(false); setViewingExam(null); }}>بستن</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Manage Questions Modal */}
+      {managingQuestionsExam && (
+        <Modal isOpen={isQuestionsModalOpen} onClose={() => setIsQuestionsModalOpen(false)} title={`مدیریت سوالات: ${managingQuestionsExam.title}`}>
+          <div className="space-y-4">
+            {managingQuestionsExam.questions.map(q => (
+              <div key={q.id} className="border p-4 rounded-lg flex justify-between items-center">
+                <p>{q.text}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setEditingQuestion(q)} className="text-gray-500 hover:text-yellow-500 transition-colors"><FilePenLine size={20} /></button>
+                  <button className="text-gray-500 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
+
+      {/* Add/Edit Question Modal */}
+      {(editingQuestion || isQuestionsModalOpen) && (
+        <Modal isOpen={editingQuestion !== null || isQuestionsModalOpen} onClose={() => setEditingQuestion(null)} title={editingQuestion ? 'ویرایش سوال' : 'افزودن سوال جدید'}>
+          <form className="space-y-4">
+            <Input name="text" label="متن سوال" defaultValue={editingQuestion?.text} required />
+            <Input name="options" label="گزینه‌ها (با کاما جدا کنید)" defaultValue={editingQuestion?.options?.join(',')} />
+            <Input name="correctAnswer" label="پاسخ صحیح (ایندکس)" type="number" defaultValue={editingQuestion?.correctAnswer} />
+            <Input name="points" label="امتیاز" type="number" defaultValue={editingQuestion?.points} required />
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="secondary" onClick={() => setEditingQuestion(null)}>لغو</Button>
+              <Button type="submit">ذخیره</Button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }
