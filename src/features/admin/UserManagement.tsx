@@ -1,14 +1,16 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { mockUsers } from '../../data/mockData';
-import { User } from '../../types';
+import axios from 'axios';
+import { User } from '../../../shared/types';
 import { Eye, FilePenLine, Trash2, Search, PlusCircle } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
+import Spinner from '../../components/ui/Spinner';
+import Alert from '../../components/ui/Alert';
 
 const userSchema = z.object({
   name: z.string().min(1, 'نام کاربری الزامی است'),
@@ -18,11 +20,15 @@ const userSchema = z.object({
 
 type UserFormData = z.infer<typeof userSchema>;
 
+const API_URL = 'http://localhost:3000/api';
+
 export default function UserManagement() {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
   });
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -32,6 +38,24 @@ export default function UserManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState('all');
   const usersPerPage = 5;
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/users`);
+      setUsers(response.data);
+      setError(null);
+    } catch (err) {
+      setError('خطا در دریافت لیست کاربران');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users
     .filter(user =>
@@ -43,18 +67,13 @@ export default function UserManagement() {
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const paginatedUsers = filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
 
-  const deleteUser = (id: string) => {
-    const updatedUsers = users.filter(user => user.id !== id);
-    setUsers(updatedUsers);
-
-    const newTotalPages = Math.ceil(updatedUsers.filter(user =>
-      (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (roleFilter === 'all' || user.role === roleFilter)
-    ).length / usersPerPage);
-
-    if (currentPage > newTotalPages) {
-      setCurrentPage(newTotalPages || 1);
+  const deleteUser = async (id: string) => {
+    try {
+      await axios.delete(`${API_URL}/users/${id}`);
+      fetchUsers();
+    } catch (err) {
+      setError('خطا در حذف کاربر');
+      console.error(err);
     }
   };
 
@@ -68,33 +87,44 @@ export default function UserManagement() {
     setIsEditModalOpen(false);
   };
 
-  const handleUpdateUser = (e: FormEvent<HTMLFormElement>) => {
+  const handleUpdateUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingUser) return;
 
     const formData = new FormData(e.currentTarget);
-    const updatedUser = {
-      ...editingUser,
+    const updatedUserData = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       role: formData.get('role') as 'student' | 'teacher' | 'admin',
     };
 
-    setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-    closeEditModal();
+    try {
+      await axios.put(`${API_URL}/users/${editingUser.id}`, updatedUserData);
+      fetchUsers();
+      closeEditModal();
+    } catch (err) {
+      setError('خطا در بروزرسانی کاربر');
+      console.error(err);
+    }
   };
 
-  const handleAddUser = (data: UserFormData) => {
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      ...data,
-      registeredAt: new Date().toLocaleDateString('fa-IR'),
-      avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
-    };
-
-    setUsers([newUser, ...users]);
-    setIsAddModalOpen(false);
+  const handleAddUser = async (data: UserFormData) => {
+    try {
+      const newUser = {
+        ...data,
+        registeredAt: new Date().toLocaleDateString('fa-IR'),
+        avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
+      }
+      await axios.post(`${API_URL}/users`, newUser);
+      fetchUsers();
+      setIsAddModalOpen(false);
+      reset();
+    } catch (err) {
+      setError('خطا در افزودن کاربر');
+      console.error(err);
+    }
   };
+
 
   const openViewModal = (user: User) => {
     setViewingUser(user);
@@ -105,6 +135,9 @@ export default function UserManagement() {
     setViewingUser(null);
     setIsViewModalOpen(false);
   };
+
+  if (loading) return <Spinner />;
+  if (error) return <Alert message={error} type="error" />;
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
@@ -282,10 +315,9 @@ export default function UserManagement() {
             <label htmlFor="add-role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-right">نقش</label>
             <select
               id="add-role"
-              name="role"
+              {...register('role')}
               defaultValue="student"
               className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
             >
               <option value="student">دانشجو</option>
               <option value="teacher">استاد</option>

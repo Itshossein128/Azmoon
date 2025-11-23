@@ -1,4 +1,4 @@
-import { Exam, Question, Result, User } from '../../types';
+import { Exam, Question, Result, User } from '../../../shared/types';
 
 export function calculateResult(exam: Exam, user: User, answers: { [key: string]: number }, timeLeft: number): Result {
   let score = 0;

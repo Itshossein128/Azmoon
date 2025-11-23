@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { useUserStore } from '../store/userStore';
-import { User } from '../types';
+import { User } from '../../shared/types';
 
 interface AuthContextType {
   login: (user: User) => void;
