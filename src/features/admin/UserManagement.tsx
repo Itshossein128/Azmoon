@@ -1,4 +1,7 @@
 import { useState, FormEvent } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { mockUsers } from '../../data/mockData';
 import { User } from '../../types';
 import { Eye, FilePenLine, Trash2, Search, PlusCircle } from 'lucide-react';
@@ -7,7 +10,18 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 
+const userSchema = z.object({
+  name: z.string().min(1, 'نام کاربری الزامی است'),
+  email: z.string().email('ایمیل نامعتبر است'),
+  role: z.enum(['student', 'teacher', 'admin']),
+});
+
+type UserFormData = z.infer<typeof userSchema>;
+
 export default function UserManagement() {
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+  });
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -70,15 +84,10 @@ export default function UserManagement() {
     closeEditModal();
   };
 
-  const handleAddUser = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
+  const handleAddUser = (data: UserFormData) => {
     const newUser: User = {
       id: crypto.randomUUID(),
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      role: formData.get('role') as 'student' | 'teacher' | 'admin',
+      ...data,
       registeredAt: new Date().toLocaleDateString('fa-IR'),
       avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
     };
@@ -253,20 +262,24 @@ export default function UserManagement() {
       )}
 
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="افزودن کاربر جدید">
-        <form onSubmit={handleAddUser} className="space-y-4">
-          <Input
-            label="نام"
-            name="name"
-            required
-          />
-          <Input
-            label="ایمیل"
-            name="email"
-            type="email"
-            required
-          />
+        <form onSubmit={handleSubmit(handleAddUser)} className="space-y-4">
           <div>
-            <label htmlFor="add-role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">نقش</label>
+            <Input
+              label="نام"
+              {...register('name')}
+            />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+          </div>
+          <div>
+            <Input
+              label="ایمیل"
+              type="email"
+              {...register('email')}
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          </div>
+          <div>
+            <label htmlFor="add-role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-right">نقش</label>
             <select
               id="add-role"
               name="role"
