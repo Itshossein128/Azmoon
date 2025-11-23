@@ -18,6 +18,7 @@ import AdminLayout from '../features/admin/AdminLayout';
 import AdminDashboard from '../features/admin/AdminDashboard';
 import UserManagement from '../features/admin/UserManagement';
 import ExamManagement from '../features/admin/ExamManagement';
+import Settings from '../features/admin/Settings';
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
           { index: true, element: <AdminDashboard /> },
           { path: 'users', element: <UserManagement /> },
           { path: 'exams', element: <ExamManagement /> },
+          { path: 'settings', element: <Settings /> },
         ],
       },
     ],
