@@ -1,15 +1,14 @@
 import { useState, useMemo, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 import { Exam, Question } from '../../../shared/types';
-import { Search, PlusCircle, Eye, FilePenLine, Trash2, BookCopy } from 'lucide-react';
+import { Search, PlusCircle, Eye, FilePenLine, Trash2 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
-
-const API_URL = 'http://localhost:3000/api';
+import { API_URL } from '../../config/api';
 
 export default function ExamManagement() {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -19,7 +18,7 @@ export default function ExamManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentExam, setCurrentExam] = useState<Exam | null>(null);
-  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view' | 'questions'>('add');
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
   const [questions, setQuestions] = useState<Question[]>([]);
 
   const examsPerPage = 5;
@@ -52,10 +51,10 @@ export default function ExamManagement() {
   const totalPages = Math.ceil(filteredExams.length / examsPerPage);
   const paginatedExams = filteredExams.slice((currentPage - 1) * examsPerPage, currentPage * examsPerPage);
 
-  const openModal = (mode: 'add' | 'edit' | 'view' | 'questions', exam: Exam | null = null) => {
+  const openModal = (mode: 'add' | 'edit' | 'view', exam: Exam | null = null) => {
     setModalMode(mode);
     setCurrentExam(exam);
-    if (exam && (mode === 'edit' || mode === 'questions')) {
+    if (exam && mode === 'edit') {
       setQuestions(exam.questions || []);
     } else {
       setQuestions([]);
@@ -76,9 +75,8 @@ export default function ExamManagement() {
       title: formData.get('title') as string,
       category: formData.get('category') as string,
       level: formData.get('level') as string,
-      totalQuestions: Number(formData.get('totalQuestions')),
-      description: formData.get('description') as string,
       duration: Number(formData.get('duration')),
+      description: formData.get('description') as string,
       passingScore: Number(formData.get('passingScore')),
       price: Number(formData.get('price')),
       imageUrl: formData.get('imageUrl') as string,
@@ -89,6 +87,7 @@ export default function ExamManagement() {
       endDate: formData.get('endDate') as string,
       tags: (formData.get('tags') as string).split(','),
       questions: questions,
+      totalQuestions: questions.length,
     };
 
     try {
@@ -115,22 +114,24 @@ export default function ExamManagement() {
     }
   };
 
-  const handleQuestionChange = (index: number, field: keyof Question, value: any) => {
+  const handleQuestionChange = (index: number, field: keyof Question | `option-${number}`, value: any) => {
     const newQuestions = [...questions];
-    if (field === 'options' || field === 'correctAnswer') {
-      if (typeof value === 'string') {
-        newQuestions[index] = { ...newQuestions[index], [field]: value.split(',').map(s => s.trim()) };
-      } else {
-        newQuestions[index] = { ...newQuestions[index], [field]: value };
-      }
-    } else {
-      newQuestions[index] = { ...newQuestions[index], [field]: value };
+    if (typeof field === 'string' && field.startsWith('option-')) {
+      const optionIndex = parseInt(field.split('-')[1]);
+      const newOptions = [...(newQuestions[index].options || [])];
+      newOptions[optionIndex] = value;
+      newQuestions[index] = { ...newQuestions[index], options: newOptions };
+    } else if (field === 'correctAnswer') {
+      newQuestions[index] = { ...newQuestions[index], correctAnswer: parseInt(value) };
+    }
+    else {
+      newQuestions[index] = { ...newQuestions[index], [field as keyof Question]: value };
     }
     setQuestions(newQuestions);
   };
 
   const addQuestion = () => {
-    setQuestions([...questions, { id: `new-${Date.now()}`, examId: currentExam?.id || 'new', text: '', type: 'multiple-choice', options: [], correctAnswer: 0, points: 0 }]);
+    setQuestions([...questions, { id: `new-${Date.now()}`, examId: currentExam?.id || 'new', text: '', type: 'multiple-choice', options: ['', '', '', ''], correctAnswer: 0, points: 0 }]);
   };
 
   const removeQuestion = (index: number) => {
@@ -193,9 +194,6 @@ export default function ExamManagement() {
                     <button onClick={() => deleteExam(exam.id)} className="text-gray-500 hover:text-red-500 transition-colors">
                       <Trash2 size={20} />
                     </button>
-                    <button onClick={() => openModal('questions', exam)} className="text-gray-500 hover:text-green-500 transition-colors">
-                      <BookCopy size={20} />
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -232,8 +230,17 @@ export default function ExamManagement() {
                     <Input label="عنوان آزمون" name="title" defaultValue={currentExam?.title} required />
                     <Input label="دسته بندی" name="category" defaultValue={currentExam?.category} required />
                     <Input label="سطح" name="level" defaultValue={currentExam?.level} required />
-                    <Input label="مدت زمان (دقیقه)" name="duration" type="number" defaultValue={currentExam?.duration} required />
-                    {/* ... other exam fields */}
+                    <Input label="مدت زمان (دقیقه)" name="duration" type="number" defaultValue={currentExam?.duration || 60} required />
+                    <Input label="توضیحات" name="description" defaultValue={currentExam?.description} />
+                    <Input label="نمره قبولی" name="passingScore" type="number" defaultValue={currentExam?.passingScore || 70} />
+                    <Input label="قیمت" name="price" type="number" defaultValue={currentExam?.price || 0} />
+                    <Input label="آدرس تصویر" name="imageUrl" defaultValue={currentExam?.imageUrl} />
+                    <Input label="مدرس" name="instructor" defaultValue={currentExam?.instructor} />
+                    <Input label="شرکت کنندگان" name="participants" type="number" defaultValue={currentExam?.participants || 0} />
+                    <Input label="امتیاز" name="rating" type="number" defaultValue={currentExam?.rating || 0} />
+                    <Input label="تاریخ شروع" name="startDate" defaultValue={currentExam?.startDate} />
+                    <Input label="تاریخ پایان" name="endDate" defaultValue={currentExam?.endDate} />
+                    <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} />
                 </div>
 
                 <div className="border-t pt-6">
@@ -241,33 +248,37 @@ export default function ExamManagement() {
                     <h3 className="text-lg font-bold">سوالات</h3>
                     <Button type="button" variant="secondary" onClick={addQuestion}>افزودن سوال</Button>
                   </div>
-                  <div className="space-y-4 max-h-64 overflow-y-auto">
+                  <div className="space-y-6 max-h-72 overflow-y-auto p-2">
                     {questions.map((q, index) => (
-                      <div key={index} className="p-4 border rounded-lg">
-                        <Input label={`سوال ${index + 1}`} value={q.text} onChange={(e) => handleQuestionChange(index, 'text', e.target.value)} />
-                        <Input label="گزینه‌ها (با ویرگول جدا کنید)" value={Array.isArray(q.options) ? q.options.join(', ') : ''} onChange={(e) => handleQuestionChange(index, 'options', e.target.value)} />
-                        <Input label="پاسخ صحیح (اندیس از 0)" type="number" value={q.correctAnswer} onChange={(e) => handleQuestionChange(index, 'correctAnswer', parseInt(e.target.value))} />
-                        <Button type="button" variant="danger" onClick={() => removeQuestion(index)}>حذف سوال</Button>
+                      <div key={index} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                        <div className="flex justify-between items-center mb-2">
+                          <label className="font-semibold">سوال {index + 1}</label>
+                          <Button type="button" variant="danger" size="sm" onClick={() => removeQuestion(index)}>حذف</Button>
+                        </div>
+                        <Input placeholder="متن سوال را وارد کنید" value={q.text} onChange={(e) => handleQuestionChange(index, 'text', e.target.value)} />
+                        <div className="mt-4">
+                          <label className="font-semibold mb-2 block">گزینه‌ها و پاسخ صحیح:</label>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                            {Array.from({ length: 4 }).map((_, optionIndex) => (
+                              <div key={optionIndex} className="flex items-center">
+                                <input type="radio" name={`correctAnswer-${index}`} value={optionIndex} checked={q.correctAnswer === optionIndex} onChange={(e) => handleQuestionChange(index, 'correctAnswer', e.target.value)} className="ml-2" />
+                                <Input placeholder={`گزینه ${optionIndex + 1}`} value={q.options[optionIndex]} onChange={(e) => handleQuestionChange(index, `option-${optionIndex}`, e.target.value)} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-6">
+                <div className="flex justify-end gap-3 pt-6 border-t mt-6">
                     <Button type="button" variant="secondary" onClick={closeModal}>لغو</Button>
                     <Button type="submit">ذخیره</Button>
                 </div>
             </form>
         </Modal>
       )}
-
-      {/* Questions View Modal */}
-      {isModalOpen && modalMode === 'questions' && currentExam && (
-        <Modal isOpen={isModalOpen} onClose={closeModal} title={`سوالات آزمون: ${currentExam.title}`}>
-          {/* ... existing questions view ... */}
-        </Modal>
-      )}
-
     </div>
   );
 }

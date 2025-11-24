@@ -6,8 +6,7 @@ import { mockCategories } from '../../data/mockData';
 import { Exam } from '../../../shared/types';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
-
-const API_URL = 'http://localhost:3000/api';
+import { API_URL } from '../../config/api';
 
 export default function ExamList() {
   const [exams, setExams] = useState<Exam[]>([]);

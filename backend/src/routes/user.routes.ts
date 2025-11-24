@@ -1,6 +1,7 @@
 import express from 'express';
 import { mockUsers } from '../data';
 import { User } from '../../../shared/types';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/users/:id', (req, res) => {
 // Create user
 router.post('/users', (req, res) => {
     const newUser: User = {
-        id: new Date().toISOString(),
+        id: crypto.randomUUID(),
         ...req.body
     };
     mockUsers.push(newUser);

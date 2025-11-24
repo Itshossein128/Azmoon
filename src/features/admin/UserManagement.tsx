@@ -11,6 +11,7 @@ import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
+import { API_URL } from '../../config/api';
 
 const userSchema = z.object({
   name: z.string().min(1, 'نام کاربری الزامی است'),
@@ -19,8 +20,6 @@ const userSchema = z.object({
 });
 
 type UserFormData = z.infer<typeof userSchema>;
-
-const API_URL = 'http://localhost:3000/api';
 
 export default function UserManagement() {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<UserFormData>({

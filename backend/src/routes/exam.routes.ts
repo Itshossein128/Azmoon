@@ -1,6 +1,7 @@
 import express from 'express';
-import { mockExams, mockUsers } from '../data';
+import { mockExams } from '../data';
 import { Exam, Question } from '../../../shared/types';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.get('/exams/:id', (req, res) => {
 // Create exam
 router.post('/exams', (req, res) => {
     const newExam: Exam = {
-        id: new Date().toISOString(),
+        id: crypto.randomUUID(),
         ...req.body
     };
     mockExams.push(newExam);
@@ -66,7 +67,7 @@ router.post('/exams/:id/questions', (req, res) => {
     const exam = mockExams.find(e => e.id === req.params.id);
     if (exam) {
         const newQuestion: Question = {
-            id: new Date().toISOString(),
+            id: crypto.randomUUID(),
             examId: req.params.id,
             ...req.body
         };

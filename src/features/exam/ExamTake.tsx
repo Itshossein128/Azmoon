@@ -3,12 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag, Eye } from 'lucide-react';
 import Button from '../../components/ui/Button';
-import { Exam, Question, Result } from '../../../shared/types';
+import { Exam, Question, Result, User } from '../../../shared/types';
 import { useUserStore } from '../../store/userStore';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
-
-const API_URL = 'http://localhost:3000/api';
+import { API_URL } from '../../config/api';
 
 export default function ExamTake() {
   const { id } = useParams();
@@ -67,9 +66,23 @@ export default function ExamTake() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!exam || !user) return;
-    navigate(`/results/${exam.id}`, { state: { answers, timeLeft } });
+
+    try {
+      const submission = {
+        examId: exam.id,
+        userId: user.id,
+        answers,
+        timeLeft
+      };
+      const response = await axios.post(`${API_URL}/results`, submission);
+      const newResult: Result = response.data;
+      navigate(`/results/${newResult.id}`);
+    } catch (err) {
+      setError('خطا در ثبت نتیجه آزمون');
+      console.error(err);
+    }
   };
 
   if (loading) return <Spinner />;
