@@ -8,6 +8,7 @@ import { useUserStore } from '../../store/userStore';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
+import Modal from '../../components/ui/Modal';
 
 export default function ExamTake() {
   const { id } = useParams();
@@ -21,6 +22,8 @@ export default function ExamTake() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
   const [timeLeft, setTimeLeft] = useState(0);
+  const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchExam = async () => {
@@ -66,6 +69,18 @@ export default function ExamTake() {
     }
   };
 
+  const toggleFlagQuestion = (questionId: string) => {
+    setFlaggedQuestions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(questionId)) {
+        newSet.delete(questionId);
+      } else {
+        newSet.add(questionId);
+      }
+      return newSet;
+    });
+  };
+
   const handleSubmit = async () => {
     if (!exam || !user) return;
 
@@ -92,6 +107,7 @@ export default function ExamTake() {
   const currentQuestion = exam.questions[currentQuestionIndex];
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+  const isCurrentQuestionFlagged = flaggedQuestions.has(currentQuestion.id);
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
@@ -111,9 +127,15 @@ export default function ExamTake() {
 
           {/* Question */}
           <div className="mb-8">
-            <p className="text-lg font-semibold mb-2 text-gray-600 dark:text-gray-300">
-              سوال {currentQuestionIndex + 1} از {exam.questions.length}
-            </p>
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                سوال {currentQuestionIndex + 1} از {exam.questions.length}
+              </p>
+              <Button variant={isCurrentQuestionFlagged ? "danger" : "outline"} size="sm" onClick={() => toggleFlagQuestion(currentQuestion.id)} className="flex items-center gap-2">
+                <Flag size={16} />
+                <span>{isCurrentQuestionFlagged ? 'حذف علامت' : 'علامت گذاری'}</span>
+              </Button>
+            </div>
             <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">{currentQuestion.text}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {currentQuestion.options.map((option, index) => (
@@ -161,7 +183,7 @@ export default function ExamTake() {
               <button
                 key={q.id}
                 onClick={() => setCurrentQuestionIndex(index)}
-                className={`w-12 h-12 flex items-center justify-center rounded-lg font-bold border-2 transition-colors ${
+                className={`w-12 h-12 flex items-center justify-center rounded-lg font-bold border-2 transition-colors relative ${
                   index === currentQuestionIndex
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : answers[q.id] !== undefined
@@ -169,16 +191,13 @@ export default function ExamTake() {
                       : 'bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
+                {flaggedQuestions.has(q.id) && <Flag size={12} className="absolute top-1 right-1 text-red-500" />}
                 {index + 1}
               </button>
             ))}
           </div>
           <div className="space-y-4">
-            <Button variant="outline" className="w-full flex justify-center gap-2">
-              <Flag size={20} />
-              <span>علامت گذاری سوال</span>
-            </Button>
-            <Button variant="outline" className="w-full flex justify-center gap-2">
+            <Button variant="outline" className="w-full flex justify-center gap-2" onClick={() => setIsReviewModalOpen(true)}>
               <Eye size={20} />
               <span>مرور کلی آزمون</span>
             </Button>
@@ -189,6 +208,31 @@ export default function ExamTake() {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} title="مرور کلی آزمون">
+        <div className="max-h-96 overflow-y-auto">
+          {exam.questions.map((q, index) => (
+            <div key={q.id} className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+              <div className="flex justify-between items-center">
+                <p className="font-semibold">سوال {index + 1}: {q.text}</p>
+                <Button size="sm" onClick={() => { setCurrentQuestionIndex(index); setIsReviewModalOpen(false); }}>برو به سوال</Button>
+              </div>
+              <div className="flex items-center mt-2 text-sm">
+                <span className={`px-2 py-1 rounded-full ${answers[q.id] !== undefined ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                  {answers[q.id] !== undefined ? 'پاسخ داده شده' : 'پاسخ نداده'}
+                </span>
+                {flaggedQuestions.has(q.id) && (
+                  <span className="flex items-center px-2 py-1 rounded-full bg-red-100 text-red-700 mr-2">
+                    <Flag size={14} className="ml-1" />
+                    علامت‌گذاری شده
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
     </div>
   );
 }

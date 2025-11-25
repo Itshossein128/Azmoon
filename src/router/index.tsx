@@ -8,7 +8,6 @@ const ExamList = lazy(() => import('../features/exam/ExamList'));
 const ExamDetail = lazy(() => import('../features/exam/ExamDetail'));
 const ExamTake = lazy(() => import('../features/exam/ExamTake'));
 const Results = lazy(() => import('../features/results/Results'));
-const ResultDetail = lazy(() => import('../features/results/ResultDetail'));
 const Dashboard = lazy(() => import('../features/dashboard/Dashboard'));
 const Profile = lazy(() => import('../features/user/Profile'));
 const Login = lazy(() => import('../features/auth/Login'));
@@ -43,8 +42,7 @@ export const router = createBrowserRouter([
           { path: 'exams', element: <SuspenseWrapper><ExamList /></SuspenseWrapper> },
           { path: 'exams/:id', element: <SuspenseWrapper><ExamDetail /></SuspenseWrapper> },
           { path: 'exams/take/:id', element: <SuspenseWrapper><ExamTake /></SuspenseWrapper> },
-          { path: 'results', element: <SuspenseWrapper><Results /></SuspenseWrapper> },
-          { path: 'results/:id', element: <SuspenseWrapper><ResultDetail /></SuspenseWrapper> },
+          { path: 'results/:id', element: <SuspenseWrapper><Results /></SuspenseWrapper> },
           { path: 'dashboard', element: <SuspenseWrapper><Dashboard /></SuspenseWrapper> },
           { path: 'profile', element: <SuspenseWrapper><Profile /></SuspenseWrapper> },
         ],
