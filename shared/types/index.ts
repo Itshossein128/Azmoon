@@ -64,4 +64,5 @@ export interface Category {
   name: string;
   icon: string;
   count: number;
+  isFeatured?: boolean;
 }

@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag, Eye } from 'lucide-react';
 import Button from '../../components/ui/Button';
-import { Exam, Question, Result, User } from '../../../shared/types';
+import { Exam, Question, Result } from '../../../shared/types';
 import { useUserStore } from '../../store/userStore';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
@@ -24,6 +25,7 @@ export default function ExamTake() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isConfirmSubmitModalOpen, setIsConfirmSubmitModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchExam = async () => {
@@ -46,7 +48,10 @@ export default function ExamTake() {
   }, [id]);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+        handleFinalSubmit();
+        return;
+    };
     const timer = setInterval(() => {
       setTimeLeft(prevTime => prevTime - 1);
     }, 1000);
@@ -81,9 +86,19 @@ export default function ExamTake() {
     });
   };
 
-  const handleSubmit = async () => {
-    if (!exam || !user) return;
+  const handleSubmitAttempt = () => {
+    if (!exam) return;
+    const unansweredQuestions = exam.questions.length - Object.keys(answers).length;
+    if (unansweredQuestions > 0) {
+        setIsConfirmSubmitModalOpen(true);
+    } else {
+        handleFinalSubmit();
+    }
+  };
 
+  const handleFinalSubmit = async () => {
+    if (!exam || !user) return;
+    setIsConfirmSubmitModalOpen(false);
     try {
       const submission = {
         examId: exam.id,
@@ -108,6 +123,7 @@ export default function ExamTake() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const isCurrentQuestionFlagged = flaggedQuestions.has(currentQuestion.id);
+  const unansweredQuestionsCount = exam.questions.length - Object.keys(answers).length;
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
@@ -125,7 +141,6 @@ export default function ExamTake() {
             </div>
           </div>
 
-          {/* Question */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
               <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
@@ -154,14 +169,13 @@ export default function ExamTake() {
             </div>
           </div>
 
-          {/* Navigation */}
           <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
             <Button variant="secondary" onClick={goToPreviousQuestion} disabled={currentQuestionIndex === 0}>
               <ChevronRight className="ml-2" />
               سوال قبلی
             </Button>
             {currentQuestionIndex === exam.questions.length - 1 ? (
-              <Button onClick={handleSubmit} variant="success">
+              <Button onClick={handleSubmitAttempt} variant="success">
                 پایان و ثبت آزمون
               </Button>
             ) : (
@@ -201,7 +215,7 @@ export default function ExamTake() {
               <Eye size={20} />
               <span>مرور کلی آزمون</span>
             </Button>
-            <Button variant="danger" className="w-full flex justify-center gap-2" onClick={handleSubmit}>
+            <Button variant="danger" className="w-full flex justify-center gap-2" onClick={handleSubmitAttempt}>
               <AlertCircle size={20} />
               <span>پایان آزمون</span>
             </Button>
@@ -209,27 +223,72 @@ export default function ExamTake() {
         </div>
       </div>
 
+      {/* Review Modal */}
       <Modal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} title="مرور کلی آزمون">
-        <div className="max-h-96 overflow-y-auto">
-          {exam.questions.map((q, index) => (
-            <div key={q.id} className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div className="flex justify-between items-center">
-                <p className="font-semibold">سوال {index + 1}: {q.text}</p>
-                <Button size="sm" onClick={() => { setCurrentQuestionIndex(index); setIsReviewModalOpen(false); }}>برو به سوال</Button>
+          <div className="max-h-[70vh] overflow-y-auto p-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {exam.questions.map((q, index) => {
+                      const isAnswered = answers[q.id] !== undefined;
+                      const isFlagged = flaggedQuestions.has(q.id);
+                      return (
+                          <div key={q.id} className="border dark:border-gray-700 rounded-xl p-4 flex flex-col justify-between transition-shadow hover:shadow-lg">
+                              <div>
+                                  <div className="flex justify-between items-start mb-2">
+                                      <p className="font-bold text-lg text-gray-800 dark:text-white">سوال {index + 1}</p>
+                                      <div className="flex items-center gap-2">
+                                          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                              isAnswered
+                                                  ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
+                                                  : 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300'
+                                          }`}>
+                                              {isAnswered ? 'پاسخ داده' : 'پاسخ نداده'}
+                                          </span>
+                                          {isFlagged && (
+                                              <span className="flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">
+                                                  <Flag size={12} className="ml-1" />
+                                                  علامت‌دار
+                                              </span>
+                                          )}
+                                      </div>
+                                  </div>
+                                  <p className="text-gray-600 dark:text-gray-400 mb-4 truncate">{q.text}</p>
+                              </div>
+                              <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                  onClick={() => {
+                                      setCurrentQuestionIndex(index);
+                                      setIsReviewModalOpen(false);
+                                  }}
+                              >
+                                  مشاهده سوال
+                              </Button>
+                          </div>
+                      );
+                  })}
               </div>
-              <div className="flex items-center mt-2 text-sm">
-                <span className={`px-2 py-1 rounded-full ${answers[q.id] !== undefined ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                  {answers[q.id] !== undefined ? 'پاسخ داده شده' : 'پاسخ نداده'}
-                </span>
-                {flaggedQuestions.has(q.id) && (
-                  <span className="flex items-center px-2 py-1 rounded-full bg-red-100 text-red-700 mr-2">
-                    <Flag size={14} className="ml-1" />
-                    علامت‌گذاری شده
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+          </div>
+      </Modal>
+
+      {/* Confirm Submit Modal */}
+      <Modal isOpen={isConfirmSubmitModalOpen} onClose={() => setIsConfirmSubmitModalOpen(false)} title="تایید نهایی ارسال">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-yellow-500" />
+          <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">آیا از ارسال آزمون مطمئن هستید؟</h3>
+          <div className="mt-2 px-7 py-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              شما به {unansweredQuestionsCount} سوال پاسخ نداده‌اید. پس از ارسال، دیگر امکان تغییر پاسخ‌ها وجود نخواهد داشت.
+            </p>
+          </div>
+          <div className="mt-4 flex justify-center gap-4">
+            <Button variant="secondary" onClick={() => setIsConfirmSubmitModalOpen(false)}>
+              بازگشت
+            </Button>
+            <Button variant="danger" onClick={handleFinalSubmit}>
+              بله، ارسال کن
+            </Button>
+          </div>
         </div>
       </Modal>
 

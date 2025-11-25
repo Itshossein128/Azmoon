@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { Exam } from '../../../shared/types';
-import { mockCategories } from '../../data/mockData';
+import { Exam, Category } from '../../../shared/types';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
@@ -11,24 +10,32 @@ import { API_URL } from '../../config/api';
 
 export default function Home() {
     const [exams, setExams] = useState<Exam[]>([]);
+    const [featuredCategories, setFeaturedCategories] = useState<Category[]>([]);
+    const [allCategories, setAllCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchExams = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get(`${API_URL}/exams?_limit=4`);
-            setExams(response.data);
-            setError(null);
-        } catch (err) {
-            setError('خطا در دریافت آزمون‌ها');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [examsRes, featuredCategoriesRes, allCategoriesRes] = await Promise.all([
+                    axios.get(`${API_URL}/exams?_limit=4`),
+                    axios.get(`${API_URL}/categories/featured`),
+                    axios.get(`${API_URL}/categories`)
+                ]);
+                setExams(examsRes.data);
+                setFeaturedCategories(featuredCategoriesRes.data);
+                setAllCategories(allCategoriesRes.data);
+                setError(null);
+            } catch (err) {
+                setError('خطا در دریافت اطلاعات');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         };
-        fetchExams();
+        fetchData();
     }, []);
 
     return (
@@ -60,9 +67,7 @@ export default function Home() {
                         <ArrowLeft className="mr-2" />
                     </Link>
                 </div>
-                {loading && <Spinner />}
-                {error && <Alert message={error} type="error" />}
-                {!loading && !error && (
+                {loading ? <Spinner /> : error ? <Alert message={error} type="error" /> : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {exams.map((exam) => (
                             <div key={exam.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 group">
@@ -79,18 +84,41 @@ export default function Home() {
                 )}
             </div>
 
-            {/* Categories Section */}
+            {/* Featured Categories Section */}
             <div className="container mx-auto px-4">
-                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">دسته بندی ها</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                    {mockCategories.map((category) => (
-                        <Link to={`/exams?category=${category.name}`} key={category.id} className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all">
-                            <div className="text-4xl mb-3">{category.icon}</div>
-                            <h3 className="font-semibold text-gray-800 dark:text-white">{category.name}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{category.count} آزمون</p>
-                        </Link>
-                    ))}
-                </div>
+                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">دسته‌بندی‌های منتخب</h2>
+                {loading ? <Spinner /> : error ? null : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {featuredCategories.map((category) => (
+                             <Link to={`/exams?category=${category.name}`} key={category.id} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <div className="h-48 w-full text-6xl flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                    {category.icon}
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 p-6">
+                                    <h3 className="text-2xl font-bold text-white group-hover:text-primary-300 transition-colors">{category.name}</h3>
+                                    <p className="text-gray-300">{category.count} آزمون</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* All Categories Section */}
+            <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">همه دسته بندی ها</h2>
+                {loading ? <Spinner /> : error ? null : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                        {allCategories.map((category) => (
+                            <Link to={`/exams?category=${category.name}`} key={category.id} className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all">
+                                <div className="text-4xl mb-3">{category.icon}</div>
+                                <h3 className="font-semibold text-gray-800 dark:text-white">{category.name}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{category.count} آزمون</p>
+                            </Link>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

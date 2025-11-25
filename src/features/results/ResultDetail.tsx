@@ -6,7 +6,7 @@ import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
 
-export default function Results() {
+export default function ResultDetail() {
   const { id } = useParams(); // This is the result ID
   const [exam, setExam] = useState<Exam | null>(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -14,18 +14,15 @@ export default function Results() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchResultAndExam = async () => {
+    const fetchResultData = async () => {
       if (!id) return;
       try {
         setLoading(true);
-        const resultResponse = await axios.get(`${API_URL}/results/${id}`);
-        const resultData: Result = resultResponse.data;
-        setResult(resultData);
+        const response = await axios.get(`${API_URL}/results/${id}`);
+        const { result: resultData, exam: examData } = response.data;
 
-        if (resultData) {
-          const examResponse = await axios.get(`${API_URL}/exams/${resultData.examId}`);
-          setExam(examResponse.data);
-        }
+        setResult(resultData);
+        setExam(examData);
 
         setError(null);
       } catch (err) {
@@ -36,7 +33,7 @@ export default function Results() {
       }
     };
 
-    fetchResultAndExam();
+    fetchResultData();
   }, [id]);
 
   if (loading) return <Spinner />;

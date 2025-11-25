@@ -14,7 +14,9 @@ router.get('/results', (req, res) => {
 router.get('/results/:id', (req, res) => {
     const result = mockResults.find(r => r.id === req.params.id);
     if (result) {
-        res.json(result);
+        const exam = mockExams.find(e => e.id === result.examId);
+        // Return both result and exam details
+        res.json({ result, exam });
     } else {
         res.status(404).send('Result not found');
     }

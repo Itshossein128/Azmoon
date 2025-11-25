@@ -247,12 +247,12 @@ export const mockExams: Exam[] = [
 ];
 
 export const mockCategories: Category[] = [
-  { id: '1', name: 'زبان انگلیسی', icon: '🇬🇧', count: 50 },
-  { id: '2', name: 'برنامه‌نویسی', icon: '💻', count: 35 },
-  { id: '3', name: 'ریاضیات', icon: '📊', count: 42 },
-  { id: '4', name: 'علوم تجربی', icon: '🔬', count: 28 },
-  { id: '5', name: 'تاریخ و جغرافیا', icon: '🌍', count: 18 },
-  { id: '6', name: 'هنر و موسیقی', icon: '🎨', count: 22 }
+  { id: '1', name: 'زبان انگلیسی', icon: '🇬🇧', count: 50, isFeatured: false },
+  { id: '2', name: 'برنامه‌نویسی', icon: '💻', count: 35, isFeatured: true },
+  { id: '3', name: 'ریاضیات', icon: '📊', count: 42, isFeatured: true },
+  { id: '4', name: 'علوم تجربی', icon: '🔬', count: 28, isFeatured: false },
+  { id: '5', name: 'تاریخ و جغرافیا', icon: '🌍', count: 18, isFeatured: false },
+  { id: '6', name: 'هنر و موسیقی', icon: '🎨', count: 22, isFeatured: true }
 ];
 
 export const mockResults: Result[] = [

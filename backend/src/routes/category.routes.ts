@@ -10,6 +10,12 @@ router.get('/categories', (req, res) => {
   res.json(mockCategories);
 });
 
+// Get featured categories
+router.get('/categories/featured', (req, res) => {
+    const featuredCategories = mockCategories.filter(c => c.isFeatured);
+    res.json(featuredCategories);
+});
+
 // Create a new category
 router.post('/categories', (req, res) => {
     const newCategory: Category = {

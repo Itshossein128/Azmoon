@@ -63,9 +63,9 @@ export default function ExamDetail() {
 
                         <div className="mt-8 pt-8 border-t dark:border-gray-700">
                            <Link to={`/exams/take/${exam.id}`} className="block">
-                             <Button size="lg" className="w-full text-lg py-4 px-8 bg-green-500 hover:bg-green-600 text-white transform hover:scale-105 transition-transform">
-                                <PlayCircle className="ml-3" />
-                                شروع آزمون
+                             <Button size="lg" className="w-full text-lg py-4 px-8 flex items-center justify-center bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full">
+                                <PlayCircle className="ml-3" size={28} />
+                                <span className="font-bold tracking-wider">شروع آزمون</span>
                              </Button>
                            </Link>
                         </div>
