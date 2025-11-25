@@ -21,6 +21,7 @@ const AdminLayout = lazy(() => import('../features/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('../features/admin/AdminDashboard'));
 const UserManagement = lazy(() => import('../features/admin/UserManagement'));
 const ExamManagement = lazy(() => import('../features/admin/ExamManagement'));
+const CategoryManagement = lazy(() => import('../features/admin/CategoryManagement'));
 const Settings = lazy(() => import('../features/admin/Settings'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -41,15 +42,12 @@ export const router = createBrowserRouter([
           { index: true, element: <SuspenseWrapper><Home /></SuspenseWrapper> },
           { path: 'exams', element: <SuspenseWrapper><ExamList /></SuspenseWrapper> },
           { path: 'exams/:id', element: <SuspenseWrapper><ExamDetail /></SuspenseWrapper> },
+          { path: 'exams/take/:id', element: <SuspenseWrapper><ExamTake /></SuspenseWrapper> },
           { path: 'results', element: <SuspenseWrapper><Results /></SuspenseWrapper> },
           { path: 'results/:id', element: <SuspenseWrapper><ResultDetail /></SuspenseWrapper> },
           { path: 'dashboard', element: <SuspenseWrapper><Dashboard /></SuspenseWrapper> },
           { path: 'profile', element: <SuspenseWrapper><Profile /></SuspenseWrapper> },
         ],
-      },
-      {
-        path: 'exam-take/:id',
-        element: <SuspenseWrapper><ExamTake /></SuspenseWrapper>,
       },
     ],
   },
@@ -72,6 +70,7 @@ export const router = createBrowserRouter([
           { index: true, element: <SuspenseWrapper><AdminDashboard /></SuspenseWrapper> },
           { path: 'users', element: <SuspenseWrapper><UserManagement /></SuspenseWrapper> },
           { path: 'exams', element: <SuspenseWrapper><ExamManagement /></SuspenseWrapper> },
+          { path: 'categories', element: <SuspenseWrapper><CategoryManagement /></SuspenseWrapper> },
           { path: 'settings', element: <SuspenseWrapper><Settings /></SuspenseWrapper> },
         ],
       },

@@ -85,7 +85,7 @@ export default function ExamManagement() {
       rating: Number(formData.get('rating')),
       startDate: formData.get('startDate') as string,
       endDate: formData.get('endDate') as string,
-      tags: (formData.get('tags') as string).split(','),
+      tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()),
       questions: questions,
       totalQuestions: questions.length,
     };
@@ -232,14 +232,6 @@ export default function ExamManagement() {
                     <Input label="سطح" name="level" defaultValue={currentExam?.level} required />
                     <Input label="مدت زمان (دقیقه)" name="duration" type="number" defaultValue={currentExam?.duration || 60} required />
                     <Input label="توضیحات" name="description" defaultValue={currentExam?.description} />
-                    <Input label="نمره قبولی" name="passingScore" type="number" defaultValue={currentExam?.passingScore || 70} />
-                    <Input label="قیمت" name="price" type="number" defaultValue={currentExam?.price || 0} />
-                    <Input label="آدرس تصویر" name="imageUrl" defaultValue={currentExam?.imageUrl} />
-                    <Input label="مدرس" name="instructor" defaultValue={currentExam?.instructor} />
-                    <Input label="شرکت کنندگان" name="participants" type="number" defaultValue={currentExam?.participants || 0} />
-                    <Input label="امتیاز" name="rating" type="number" defaultValue={currentExam?.rating || 0} />
-                    <Input label="تاریخ شروع" name="startDate" defaultValue={currentExam?.startDate} />
-                    <Input label="تاریخ پایان" name="endDate" defaultValue={currentExam?.endDate} />
                     <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} />
                 </div>
 

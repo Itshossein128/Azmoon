@@ -62,7 +62,7 @@ export default function ExamDetail() {
 
                         <div className="mt-8">
                            <Link to={`/exams/take/${exam.id}`}>
-                             <Button size="lg" className="w-full md:w-auto">شروع آزمون</Button>
+                             <Button size="lg" className="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white">شروع آزمون</Button>
                            </Link>
                         </div>
                     </div>

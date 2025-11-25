@@ -1,53 +1,46 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, BookOpen, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, Folder } from 'lucide-react';
+import Header from '../../components/layout/Header';
 
-const SidebarLink = ({ to, icon, children }: { to: string, icon: React.ReactNode, children: React.ReactNode }) => (
-  <NavLink
-    to={to}
-    end
-    className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-        isActive
-          ? 'bg-primary-600 text-white'
-          : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-      }`
-    }
-  >
-    {icon}
-    <span className="font-semibold">{children}</span>
-  </NavLink>
-);
+const navItems = [
+  { name: 'داشبورد', to: '/admin', icon: LayoutDashboard },
+  { name: 'مدیریت کاربران', to: '/admin/users', icon: Users },
+  { name: 'مدیریت آزمون‌ها', to: '/admin/exams', icon: FileText },
+  { name: 'مدیریت دسته‌بندی‌ها', to: '/admin/categories', icon: Folder },
+  { name: 'تنظیمات', to: '/admin/settings', icon: Settings },
+];
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <aside className="w-64 bg-white dark:bg-gray-800 shadow-md p-6 flex-shrink-0">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="bg-gradient-to-br from-primary-500 to-primary-700 p-2 rounded-lg">
-            <LayoutDashboard className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-xl font-bold text-gray-800 dark:text-white">پنل ادمین</span>
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-md">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-primary-500">پنل ادمین</h1>
         </div>
-
-        <nav className="space-y-3">
-          <SidebarLink to="/admin" icon={<LayoutDashboard className="w-5 h-5" />}>
-            داشبورد
-          </SidebarLink>
-          <SidebarLink to="/admin/users" icon={<Users className="w-5 h-5" />}>
-            مدیریت کاربران
-          </SidebarLink>
-          <SidebarLink to="/admin/exams" icon={<BookOpen className="w-5 h-5" />}>
-            مدیریت آزمون‌ها
-          </SidebarLink>
-          <SidebarLink to="/admin/settings" icon={<Settings className="w-5 h-5" />}>
-            تنظیمات
-          </SidebarLink>
+        <nav className="mt-6">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.to}
+              end
+              className={({ isActive }) =>
+                `flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  isActive ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300 border-r-4 border-primary-500' : ''
+                }`
+              }
+            >
+              <item.icon className="mr-3" size={20} />
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
         </nav>
       </aside>
-
-      <main className="flex-1 p-8">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

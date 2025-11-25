@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoutes from './src/routes/user.routes';
 import examRoutes from './src/routes/exam.routes';
 import resultRoutes from './src/routes/result.routes';
+import categoryRoutes from './src/routes/category.routes';
 
 const app = express();
 const port = 3000;
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api', userRoutes);
 app.use('/api', examRoutes);
 app.use('/api', resultRoutes);
+app.use('/api', categoryRoutes);
 
 app.get('/', (req, res) => {
   res.send('Backend server is running!');
