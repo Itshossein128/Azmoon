@@ -120,8 +120,8 @@ export const mockExams: Exam[] = [
     instructor: 'دکتر رضایی',
     participants: 1250,
     rating: 4.8,
-    startDate: '1403/02/20',
-    endDate: '1403/02/25',
+    startDate: '2024-05-09T10:00',
+    endDate: '2024-05-14T23:59',
     tags: ['گرامر', 'واژگان', 'درک مطلب'],
     questions: mockQuestions,
   },
@@ -244,6 +244,12 @@ export const mockExams: Exam[] = [
     tags: ['الگوریتم', 'داده‌ساختار', 'جاوا'],
     questions: [],
   }
+];
+
+export const mockAllQuestions: Question[] = [
+    ...mockQuestions,
+    ...mockPythonQuestions,
+    ...mockMathQuestions,
 ];
 
 export const mockCategories: Category[] = [
