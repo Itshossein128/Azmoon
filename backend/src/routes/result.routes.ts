@@ -25,7 +25,14 @@ router.get('/results/:id', (req, res) => {
 // Get results for a user
 router.get('/users/:userId/results', (req, res) => {
     const userResults = mockResults.filter(r => r.userId === req.params.userId);
-    res.json(userResults);
+    const resultsWithExamTitles = userResults.map(result => {
+        const exam = mockExams.find(e => e.id === result.examId);
+        return {
+            ...result,
+            examTitle: exam ? exam.title : 'آزمون حذف شده'
+        };
+    });
+    res.json(resultsWithExamTitles);
 });
 
 // Create a new result and calculate score on the server

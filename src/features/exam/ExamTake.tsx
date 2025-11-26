@@ -126,7 +126,7 @@ export default function ExamTake() {
   const unansweredQuestionsCount = exam.questions.length - Object.keys(answers).length;
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row gap-8">
       {/* Main Content */}
       <div className="flex-grow">
         <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">

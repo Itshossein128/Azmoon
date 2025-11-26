@@ -11,6 +11,7 @@ const ResultsList = lazy(() => import('../features/results/ResultsList'));
 const ResultDetail = lazy(() => import('../features/results/ResultDetail'));
 const Dashboard = lazy(() => import('../features/dashboard/Dashboard'));
 const Profile = lazy(() => import('../features/user/Profile'));
+const About = lazy(() => import('../features/about/About'));
 const Login = lazy(() => import('../features/auth/Login'));
 const Register = lazy(() => import('../features/auth/Register'));
 const ForgotPassword = lazy(() => import('../features/auth/ForgotPassword'));
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
           { path: 'results/:id', element: <SuspenseWrapper><ResultDetail /></SuspenseWrapper> },
           { path: 'dashboard', element: <SuspenseWrapper><Dashboard /></SuspenseWrapper> },
           { path: 'profile', element: <SuspenseWrapper><Profile /></SuspenseWrapper> },
+          { path: 'about', element: <SuspenseWrapper><About /></SuspenseWrapper> },
         ],
       },
     ],

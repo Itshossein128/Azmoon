@@ -50,6 +50,7 @@ export interface Result {
   timeSpent: number;
   answers: number[];
   correctAnswers: number;
+  examTitle?: string;
 }
 
 export interface UserAnswer {

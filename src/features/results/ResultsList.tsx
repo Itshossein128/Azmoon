@@ -2,26 +2,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Result, Exam } from '../../../shared/types';
+import { Result } from '../../../shared/types';
 import { useUserStore } from '../../store/userStore';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
 import { Eye } from 'lucide-react';
 
-// This is a temporary solution to get exam titles until the backend is updated.
-async function fetchExamTitle(examId: string): Promise<string> {
-    try {
-        const response = await axios.get(`${API_URL}/exams/${examId}`);
-        return response.data.title;
-    } catch (error) {
-        return "آزمون حذف شده";
-    }
-}
-
 export default function ResultsList() {
     const user = useUserStore(state => state.user);
-    const [results, setResults] = useState<(Result & { examTitle?: string })[]>([]);
+    const [results, setResults] = useState<Result[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -35,17 +25,7 @@ export default function ResultsList() {
             try {
                 setLoading(true);
                 const response = await axios.get(`${API_URL}/users/${user.id}/results`);
-                const resultsData: Result[] = response.data;
-
-                // Fetch exam titles for each result
-                const resultsWithTitles = await Promise.all(
-                    resultsData.map(async (result) => {
-                        const examTitle = await fetchExamTitle(result.examId);
-                        return { ...result, examTitle };
-                    })
-                );
-
-                setResults(resultsWithTitles);
+                setResults(response.data);
                 setError(null);
             } catch (err) {
                 setError('خطا در دریافت لیست نتایج');
