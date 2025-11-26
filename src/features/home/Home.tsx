@@ -1,224 +1,125 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { BookOpen, Trophy, Users, Clock, Star, TrendingUp, CheckCircle, Award } from 'lucide-react';
-import { mockExams, mockCategories } from '../../data/mockData';
+import { ArrowLeft } from 'lucide-react';
+import { Exam, Category } from '../../../shared/types';
+import Button from '../../components/ui/Button';
+import Spinner from '../../components/ui/Spinner';
+import Alert from '../../components/ui/Alert';
+import { API_URL } from '../../config/api';
 
 export default function Home() {
-  const featuredExams = mockExams.slice(0, 4);
-  const stats = [
-    { icon: Users, label: 'دانشجویان فعال', value: '۱۵,۰۰۰+' },
-    { icon: BookOpen, label: 'آزمون‌های متنوع', value: '۱,۲۰۰+' },
-    { icon: Trophy, label: 'گواهینامه صادر شده', value: '۸,۵۰۰+' },
-    { icon: Star, label: 'رضایت کاربران', value: '۴.۸/۵' }
-  ];
+    const [exams, setExams] = useState<Exam[]>([]);
+    const [featuredCategories, setFeaturedCategories] = useState<Category[]>([]);
+    const [allCategories, setAllCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  const features = [
-    {
-      icon: Clock,
-      title: 'دسترسی ۲۴ ساعته',
-      description: 'در هر زمان و از هر مکانی به آزمون‌ها دسترسی داشته باشید'
-    },
-    {
-      icon: Award,
-      title: 'گواهینامه معتبر',
-      description: 'دریافت گواهینامه دیجیتال پس از قبولی در آزمون'
-    },
-    {
-      icon: TrendingUp,
-      title: 'پیشرفت تحصیلی',
-      description: 'رصد پیشرفت و نمایش آمار دقیق عملکرد شما'
-    },
-    {
-      icon: CheckCircle,
-      title: 'نتایج فوری',
-      description: 'دریافت نتایج آزمون بلافاصله پس از اتمام'
-    }
-  ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [examsRes, featuredCategoriesRes, allCategoriesRes] = await Promise.all([
+                    axios.get(`${API_URL}/exams?_limit=4`),
+                    axios.get(`${API_URL}/categories/featured`),
+                    axios.get(`${API_URL}/categories`)
+                ]);
+                setExams(examsRes.data);
+                setFeaturedCategories(featuredCategoriesRes.data);
+                setAllCategories(allCategoriesRes.data);
+                setError(null);
+            } catch (err) {
+                setError('خطا در دریافت اطلاعات');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
-  return (
-    <div>
-      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              سامانه آزمون آنلاین
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100 leading-relaxed">
-              بهترین پلتفرم برای برگزاری و شرکت در آزمون‌های آنلاین
-            </p>
-            <p className="text-lg mb-10 text-primary-200 leading-relaxed">
-              با استفاده از جدیدترین تکنولوژی‌ها، تجربه‌ای منحصربه‌فرد از آزمون آنلاین را تجربه کنید
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/exams"
-                className="px-8 py-4 bg-white text-primary-700 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-xl"
-              >
-                مشاهده آزمون‌ها
-              </Link>
-              <Link
-                to="/register"
-                className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-primary-700 transition-all hover:scale-105"
-              >
-                ثبت‌نام رایگان
-              </Link>
+    return (
+        <div className="space-y-16 py-12">
+            {/* Hero Section */}
+            <div className="container mx-auto text-center px-4">
+                <h1 className="text-4xl md:text-6xl font-extrabold text-gray-800 dark:text-white mb-4">
+                    پلتفرم آزمون آنلاین
+                </h1>
+                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+                    دانش خود را با طیف گسترده ای از آزمون ها در موضوعات مختلف بسنجید و برای موفقیت آماده شوید.
+                </p>
+                <div className="flex justify-center gap-4">
+                    <Button size="lg" asChild>
+                        <Link to="/exams">مشاهده همه آزمون ها</Link>
+                    </Button>
+                    <Button size="lg" variant="secondary" asChild>
+                        <Link to="/about">درباره ما</Link>
+                    </Button>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="py-12 bg-white dark:bg-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-2xl mb-4">
-                  <stat.icon className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+            {/* Featured Exams Section */}
+            <div className="container mx-auto px-4">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-3xl font-bold text-gray-800 dark:text-white">آزمون های پیشنهادی</h2>
+                    <Link to="/exams" className="flex items-center text-primary-500 hover:text-primary-600">
+                        <span>مشاهده همه</span>
+                        <ArrowLeft className="mr-2" />
+                    </Link>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{stat.value}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">دسته‌بندی آزمون‌ها</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">آزمون مورد نظر خود را انتخاب کنید</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {mockCategories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/exams?category=${category.name}`}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-1 text-center"
-              >
-                <div className="text-4xl mb-3">{category.icon}</div>
-                <h3 className="font-bold text-gray-800 dark:text-white mb-2">{category.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{category.count} آزمون</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-white dark:bg-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">آزمون‌های پیشنهادی</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">محبوب‌ترین آزمون‌ها را امتحان کنید</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredExams.map((exam) => (
-              <Link
-                key={exam.id}
-                to={`/exams/${exam.id}`}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover"
-              >
-                <div className="relative h-48">
-                  <img
-                    src={exam.imageUrl}
-                    alt={exam.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-sm font-bold text-primary-600">
-                    {exam.level}
-                  </div>
-                  {exam.price === 0 && (
-                    <div className="absolute top-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                      رایگان
+                {loading ? <Spinner /> : error ? <Alert message={error} type="error" /> : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {exams.map((exam) => (
+                            <div key={exam.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 group">
+                                <Link to={`/exams/${exam.id}`} className="block">
+                                    <img src={exam.imageUrl} alt={exam.title} className="w-full h-48 object-cover" />
+                                    <div className="p-6">
+                                        <p className="text-sm font-semibold text-primary-500 mb-2">{exam.category}</p>
+                                        <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white group-hover:text-primary-500 transition-colors truncate">{exam.title}</h3>
+                                    </div>
+                                </Link>
+                            </div>
+                        ))}
                     </div>
-                  )}
-                </div>
+                )}
+            </div>
 
-                <div className="p-5">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{exam.category}</div>
-                  <h3 className="font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 h-12">
-                    {exam.title}
-                  </h3>
+            {/* Featured Categories Section */}
+            <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">دسته‌بندی‌های منتخب</h2>
+                {loading ? <Spinner /> : error ? null : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {featuredCategories.map((category) => (
+                             <Link to={`/exams?category=${category.name}`} key={category.id} className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <div className="h-48 w-full text-6xl flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                    {category.icon}
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 p-6">
+                                    <h3 className="text-2xl font-bold text-white group-hover:text-primary-300 transition-colors">{category.name}</h3>
+                                    <p className="text-gray-300">{category.count} آزمون</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-                  <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{exam.duration} دقیقه</span>
+            {/* All Categories Section */}
+            <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">همه دسته بندی ها</h2>
+                {loading ? <Spinner /> : error ? null : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                        {allCategories.map((category) => (
+                            <Link to={`/exams?category=${category.name}`} key={category.id} className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all">
+                                <div className="text-4xl mb-3">{category.icon}</div>
+                                <h3 className="font-semibold text-gray-800 dark:text-white">{category.name}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{category.count} آزمون</p>
+                            </Link>
+                        ))}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{exam.totalQuestions} سوال</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t dark:border-gray-700">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="font-bold text-gray-800 dark:text-white">{exam.rating}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                      <Users className="w-4 h-4" />
-                      <span className="text-sm">{exam.participants.toLocaleString('fa-IR')}</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <Link
-              to="/exams"
-              className="inline-block px-8 py-3 bg-primary-600 text-white rounded-lg font-bold hover:bg-primary-700 transition-colors"
-            >
-              مشاهده همه آزمون‌ها
-            </Link>
-          </div>
+                )}
+            </div>
         </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">مزایای سامانه</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">چرا سامانه آزمون آنلاین را انتخاب کنیم؟</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all"
-              >
-                <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center mb-4">
-                  <feature.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-gradient-to-br from-primary-600 to-primary-800 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">آماده شروع هستید؟</h2>
-          <p className="text-xl mb-8 text-primary-100">همین حالا ثبت‌نام کنید و آزمون اول خود را شروع کنید</p>
-          <Link
-            to="/register"
-            className="inline-block px-10 py-4 bg-white text-primary-700 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all hover:scale-105 shadow-xl"
-          >
-            ثبت‌نام رایگان
-          </Link>
-        </div>
-      </section>
-    </div>
-  );
+    );
 }

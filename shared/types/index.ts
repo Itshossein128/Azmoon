@@ -50,6 +50,7 @@ export interface Result {
   timeSpent: number;
   answers: number[];
   correctAnswers: number;
+  examTitle?: string;
 }
 
 export interface UserAnswer {
@@ -64,4 +65,5 @@ export interface Category {
   name: string;
   icon: string;
   count: number;
+  isFeatured?: boolean;
 }
