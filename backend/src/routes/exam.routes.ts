@@ -1,5 +1,5 @@
 import express from 'express';
-import { mockExams } from '../data';
+import { mockExams, mockAllQuestions } from '../data';
 import { Exam, Question } from '../../../shared/types';
 import crypto from 'crypto';
 
@@ -22,9 +22,15 @@ router.get('/exams/:id', (req, res) => {
 
 // Create exam
 router.post('/exams', (req, res) => {
+    const { questions, ...examData } = req.body;
+    const questionIds = questions.map((q: Partial<Question>) => q.id);
+    const fullQuestions = mockAllQuestions.filter(q => questionIds.includes(q.id));
+
     const newExam: Exam = {
         id: crypto.randomUUID(),
-        ...req.body
+        ...examData,
+        questions: fullQuestions,
+        totalQuestions: fullQuestions.length,
     };
     mockExams.push(newExam);
     res.status(201).json(newExam);
@@ -34,7 +40,16 @@ router.post('/exams', (req, res) => {
 router.put('/exams/:id', (req, res) => {
     const examIndex = mockExams.findIndex(e => e.id === req.params.id);
     if (examIndex !== -1) {
-        mockExams[examIndex] = { ...mockExams[examIndex], ...req.body };
+        const { questions, ...examData } = req.body;
+        const questionIds = questions.map((q: Partial<Question>) => q.id);
+        const fullQuestions = mockAllQuestions.filter(q => questionIds.includes(q.id));
+
+        mockExams[examIndex] = {
+            ...mockExams[examIndex],
+            ...examData,
+            questions: fullQuestions,
+            totalQuestions: fullQuestions.length,
+        };
         res.json(mockExams[examIndex]);
     } else {
         res.status(404).send('Exam not found');
