@@ -16,8 +16,11 @@
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
     "express": "^5.1.0",
+    "multer": "^2.0.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "xlsx": "^0.18.5"
   }
 }
