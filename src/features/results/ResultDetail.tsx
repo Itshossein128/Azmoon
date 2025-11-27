@@ -57,7 +57,7 @@ export default function ResultDetail() {
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
                     <p className="text-lg text-gray-500 dark:text-gray-400">درصد</p>
-                    <p className="text-4xl font-bold text-primary-500">{result.percentage}%</p>
+                    <p className="text-4xl font-bold text-primary-500">{result.percentage?.toFixed(2) ?? '0.00'}%</p>
                 </div>
             </div>
 
