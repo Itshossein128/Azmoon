@@ -30,6 +30,7 @@ export interface Exam {
 export interface Question {
   id: string;
   examId: string;
+  category?: string;
   text: string;
   type: 'multiple-choice' | 'true-false' | 'essay';
   options?: string[];
