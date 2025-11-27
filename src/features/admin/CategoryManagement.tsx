@@ -16,6 +16,7 @@ export default function CategoryManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchCategories = async () => {
     try {
@@ -34,6 +35,10 @@ export default function CategoryManagement() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const openModal = (mode: 'add' | 'edit', category: Category | null = null) => {
     setModalMode(mode);
@@ -86,10 +91,22 @@ export default function CategoryManagement() {
     <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">مدیریت دسته‌بندی‌ها</h1>
-        <Button onClick={() => openModal('add')} className="flex items-center gap-2">
-          <PlusCircle size={20} />
-          <span>افزودن دسته‌بندی</span>
-        </Button>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="جستجوی دسته‌بندی..."
+              className="pl-10 pr-4 py-2 rounded-lg border bg-gray-50 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button onClick={() => openModal('add')} className="flex items-center gap-2">
+            <PlusCircle size={20} />
+            <span>افزودن دسته‌بندی</span>
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -103,7 +120,7 @@ export default function CategoryManagement() {
             </tr>
           </thead>
           <tbody>
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <tr key={category.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                 <td className="p-4 text-2xl">{category.icon}</td>
                 <td className="p-4">{category.name}</td>
