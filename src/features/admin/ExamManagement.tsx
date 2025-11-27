@@ -9,6 +9,7 @@ import Input from '../../components/ui/Input';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
+import QuestionSelector from './components/QuestionSelector';
 
 export default function ExamManagement() {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -19,7 +20,7 @@ export default function ExamManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentExam, setCurrentExam] = useState<Exam | null>(null);
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
 
   const examsPerPage = 5;
 
@@ -54,10 +55,10 @@ export default function ExamManagement() {
   const openModal = (mode: 'add' | 'edit' | 'view', exam: Exam | null = null) => {
     setModalMode(mode);
     setCurrentExam(exam);
-    if (exam && mode === 'edit') {
-      setQuestions(exam.questions || []);
+    if (exam && (mode === 'edit' || mode === 'view')) {
+      setSelectedQuestionIds(exam.questions?.map(q => q.id) || []);
     } else {
-      setQuestions([]);
+      setSelectedQuestionIds([]);
     }
     setIsModalOpen(true);
   };
@@ -65,7 +66,7 @@ export default function ExamManagement() {
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentExam(null);
-    setQuestions([]);
+    setSelectedQuestionIds([]);
   };
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -86,8 +87,8 @@ export default function ExamManagement() {
       startDate: formData.get('startDate') as string,
       endDate: formData.get('endDate') as string,
       tags: (formData.get('tags') as string).split(',').map(tag => tag.trim()),
-      questions: questions,
-      totalQuestions: questions.length,
+      questions: selectedQuestionIds.map(id => ({ id })), // Send only IDs
+      totalQuestions: selectedQuestionIds.length,
     };
 
     try {
@@ -112,30 +113,6 @@ export default function ExamManagement() {
       setError('خطا در حذف آزمون');
       console.error(err);
     }
-  };
-
-  const handleQuestionChange = (index: number, field: keyof Question | `option-${number}`, value: any) => {
-    const newQuestions = [...questions];
-    if (typeof field === 'string' && field.startsWith('option-')) {
-      const optionIndex = parseInt(field.split('-')[1]);
-      const newOptions = [...(newQuestions[index].options || [])];
-      newOptions[optionIndex] = value;
-      newQuestions[index] = { ...newQuestions[index], options: newOptions };
-    } else if (field === 'correctAnswer') {
-      newQuestions[index] = { ...newQuestions[index], correctAnswer: parseInt(value) };
-    }
-    else {
-      newQuestions[index] = { ...newQuestions[index], [field as keyof Question]: value };
-    }
-    setQuestions(newQuestions);
-  };
-
-  const addQuestion = () => {
-    setQuestions([...questions, { id: `new-${Date.now()}`, examId: currentExam?.id || 'new', text: '', type: 'multiple-choice', options: ['', '', '', ''], correctAnswer: 0, points: 0 }]);
-  };
-
-  const removeQuestion = (index: number) => {
-    setQuestions(questions.filter((_, i) => i !== index));
   };
 
   if (loading) return <Spinner />;
@@ -231,37 +208,25 @@ export default function ExamManagement() {
                     <Input label="دسته بندی" name="category" defaultValue={currentExam?.category} required />
                     <Input label="سطح" name="level" defaultValue={currentExam?.level} required />
                     <Input label="مدت زمان (دقیقه)" name="duration" type="number" defaultValue={currentExam?.duration || 60} required />
-                    <Input label="توضیحات" name="description" defaultValue={currentExam?.description} />
-                    <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} />
+                    <Input label="نمره قبولی" name="passingScore" type="number" defaultValue={currentExam?.passingScore || 50} required />
+                    <Input label="قیمت (تومان)" name="price" type="number" defaultValue={currentExam?.price || 0} />
+                    <Input label="آدرس تصویر" name="imageUrl" defaultValue={currentExam?.imageUrl} />
+                    <Input label="مدرس" name="instructor" defaultValue={currentExam?.instructor} />
+                    <Input label="تاریخ شروع" name="startDate" type="datetime-local" defaultValue={currentExam?.startDate?.slice(0, 16)} />
+                    <Input label="تاریخ پایان" name="endDate" type="datetime-local" defaultValue={currentExam?.endDate?.slice(0, 16)} />
+                    <Input label="توضیحات" name="description" defaultValue={currentExam?.description} className="md:col-span-2" />
+                    <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} className="md:col-span-2" />
                 </div>
 
                 <div className="border-t pt-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold">سوالات</h3>
-                    <Button type="button" variant="secondary" onClick={addQuestion}>افزودن سوال</Button>
-                  </div>
-                  <div className="space-y-6 max-h-72 overflow-y-auto p-2">
-                    {questions.map((q, index) => (
-                      <div key={index} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                        <div className="flex justify-between items-center mb-2">
-                          <label className="font-semibold">سوال {index + 1}</label>
-                          <Button type="button" variant="danger" size="sm" onClick={() => removeQuestion(index)}>حذف</Button>
-                        </div>
-                        <Input placeholder="متن سوال را وارد کنید" value={q.text} onChange={(e) => handleQuestionChange(index, 'text', e.target.value)} />
-                        <div className="mt-4">
-                          <label className="font-semibold mb-2 block">گزینه‌ها و پاسخ صحیح:</label>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-                            {Array.from({ length: 4 }).map((_, optionIndex) => (
-                              <div key={optionIndex} className="flex items-center">
-                                <input type="radio" name={`correctAnswer-${index}`} value={optionIndex} checked={q.correctAnswer === optionIndex} onChange={(e) => handleQuestionChange(index, 'correctAnswer', e.target.value)} className="ml-2" />
-                                <Input placeholder={`گزینه ${optionIndex + 1}`} value={q.options[optionIndex]} onChange={(e) => handleQuestionChange(index, `option-${optionIndex}`, e.target.value)} />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="text-lg font-bold mb-2">انتخاب سوالات از بانک</h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    ابتدا دسته‌بندی را انتخاب کرده، سپس سوالات مورد نظر را جستجو و انتخاب کنید. ({selectedQuestionIds.length} سوال انتخاب شده)
+                  </p>
+                  <QuestionSelector
+                    selectedQuestions={selectedQuestionIds}
+                    onChange={setSelectedQuestionIds}
+                  />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-6 border-t mt-6">

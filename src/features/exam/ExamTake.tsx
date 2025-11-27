@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag, Eye } from 'lucide-react';
+import { Clock, AlertCircle, ChevronRight, ChevronLeft, Flag, Eye, UploadCloud } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
 import { Exam, Question, Result } from '../../../shared/types';
 import { useUserStore } from '../../store/userStore';
 import Spinner from '../../components/ui/Spinner';
@@ -16,12 +17,13 @@ export default function ExamTake() {
   const navigate = useNavigate();
   const user = useUserStore(state => state.user);
 
+  type Answer = number | number[] | string | { text: string; file?: File };
   const [exam, setExam] = useState<Exam | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: string]: number }>({});
+  const [answers, setAnswers] = useState<{ [key: string]: Answer }>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -58,8 +60,31 @@ export default function ExamTake() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const handleAnswerSelect = (questionId: string, optionIndex: number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
+  const handleAnswerChange = (questionId: string, value: Answer) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleEssayAnswerChange = (questionId: string, text: string) => {
+    const currentAnswer = (answers[questionId] as { text: string; file?: File }) || { text: '' };
+    handleAnswerChange(questionId, { ...currentAnswer, text });
+  };
+
+  const handleFileChange = (questionId: string, file: File | undefined) => {
+    const currentAnswer = (answers[questionId] as { text: string; file?: File }) || { text: '' };
+    handleAnswerChange(questionId, { ...currentAnswer, file });
+  };
+
+  const handleMultiChoiceAnswer = (question: Question, optionIndex: number) => {
+    const questionId = question.id;
+    if (question.type === 'multiple-answer') {
+        const currentAnswers = (answers[questionId] as number[] | undefined) || [];
+        const newAnswers = currentAnswers.includes(optionIndex)
+            ? currentAnswers.filter(ans => ans !== optionIndex)
+            : [...currentAnswers, optionIndex];
+        handleAnswerChange(questionId, newAnswers);
+    } else {
+        handleAnswerChange(questionId, optionIndex);
+    }
   };
 
   const goToNextQuestion = () => {
@@ -99,16 +124,41 @@ export default function ExamTake() {
   const handleFinalSubmit = async () => {
     if (!exam || !user) return;
     setIsConfirmSubmitModalOpen(false);
+
     try {
-      const submission = {
-        examId: exam.id,
-        userId: user.id,
-        answers,
-        timeLeft
-      };
-      const response = await axios.post(`${API_URL}/results`, submission);
-      const newResult: Result = response.data;
-      navigate(`/results/${newResult.id}`);
+        const formData = new FormData();
+        formData.append('examId', exam.id);
+        formData.append('userId', user.id);
+        formData.append('timeLeft', timeLeft.toString());
+
+        const jsonAnswers: { [key: string]: number | number[] | string } = {};
+
+        for (const questionId in answers) {
+            const answer = answers[questionId];
+            if (typeof answer === 'object' && 'file' in answer && (answer as any).file) {
+                // Handle essay with file upload
+                formData.append(`essay-text-${questionId}`, (answer as any).text);
+                formData.append(`file-${questionId}`, (answer as any).file);
+            } else if (typeof answer === 'object' && 'text' in answer) {
+                // Handle essay without file
+                 formData.append(`essay-text-${questionId}`, (answer as any).text);
+            }
+            else {
+                // Handle other answer types
+                jsonAnswers[questionId] = answer as number | number[] | string;
+            }
+        }
+
+        formData.append('answers', JSON.stringify(jsonAnswers));
+
+        const response = await axios.post(`${API_URL}/results`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        const newResult: Result = response.data;
+        navigate(`/results/${newResult.id}`);
     } catch (err) {
       setError('خطا در ثبت نتیجه آزمون');
       console.error(err);
@@ -152,21 +202,52 @@ export default function ExamTake() {
               </Button>
             </div>
             <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">{currentQuestion.text}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(currentQuestion.id, index)}
-                  className={`p-4 rounded-lg text-right border-2 transition-all duration-200 ${
-                    answers[currentQuestion.id] === index
-                      ? 'bg-primary-500 border-primary-500 text-white shadow-lg scale-105'
-                      : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+
+            {currentQuestion.type === 'fill-in-the-blank' ? (
+                <div className="mt-4">
+                    <Input type="text" placeholder="پاسخ خود را اینجا وارد کنید..." value={(answers[currentQuestion.id] as string) || ''} onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)} />
+                </div>
+            ) : currentQuestion.type === 'essay-with-upload' ? (
+                <div className="mt-4 space-y-4">
+                    <textarea
+                        placeholder="پاسخ تشریحی خود را اینجا بنویسید..."
+                        rows={8}
+                        className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        value={((answers[currentQuestion.id] as any)?.text) || ''}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleEssayAnswerChange(currentQuestion.id, e.target.value)}
+                    />
+                    <label htmlFor="file-upload" className="flex items-center justify-center w-full px-4 py-6 bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
+                        <div className="text-center">
+                            <UploadCloud className="w-12 h-12 mx-auto text-gray-400" />
+                            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                {((answers[currentQuestion.id] as any)?.file) ? `فایل: ${((answers[currentQuestion.id] as any).file as File).name}` : 'برای آپلود فایل کلیک کنید یا فایل را بکشید و رها کنید'}
+                            </p>
+                            <input id="file-upload" type="file" className="hidden" onChange={(e: ChangeEvent<HTMLInputElement>) => handleFileChange(currentQuestion.id, e.target.files?.[0])} />
+                        </div>
+                    </label>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentQuestion.options?.map((option, index) => {
+                    const isSelected = currentQuestion.type === 'multiple-answer'
+                        ? ((answers[currentQuestion.id] as number[]) || []).includes(index)
+                        : answers[currentQuestion.id] === index;
+
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => handleMultiChoiceAnswer(currentQuestion, index)}
+                            className={`p-4 rounded-lg text-right border-2 transition-all duration-200 flex items-center gap-4 ${ isSelected ? 'bg-primary-500 border-primary-500 text-white shadow-lg scale-105' : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-600' }`}
+                        >
+                            <div className={`w-6 h-6 flex-shrink-0 rounded-md border-2 flex items-center justify-center ${isSelected ? 'border-white bg-white' : 'border-gray-400'}`}>
+                                {isSelected && <div className="w-3 h-3 rounded-md bg-white"></div>}
+                            </div>
+                            <span className="flex-grow">{option}</span>
+                        </button>
+                    );
+                })}
+                </div>
+            )}
           </div>
 
           <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">

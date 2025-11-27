@@ -1,9 +1,11 @@
 import express from 'express';
+import multer from 'multer';
 import { mockResults, mockExams } from '../data';
 import { Result, Exam } from '../../../shared/types';
 import crypto from 'crypto';
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Get all results
 router.get('/results', (req, res) => {
@@ -36,20 +38,50 @@ router.get('/users/:userId/results', (req, res) => {
 });
 
 // Create a new result and calculate score on the server
-router.post('/results', (req, res) => {
-    const { examId, userId, answers, timeLeft } = req.body;
+router.post('/results', upload.any(), (req, res) => {
+    const { examId, userId, timeLeft } = req.body;
+    const answers = JSON.parse(req.body.answers);
     const exam = mockExams.find(e => e.id === examId);
 
     if (!exam) {
         return res.status(404).send('Exam not found');
     }
 
+    // Here you could also process req.files to save them
+    // For now, we just acknowledge them.
+
     let score = 0;
     let correctAnswers = 0;
     exam.questions.forEach(q => {
-        if (answers[q.id] === q.correctAnswer) {
-        score += q.points;
-        correctAnswers++;
+        const userAnswer = answers[q.id];
+        const correctAnswer = q.correctAnswer;
+
+        if (userAnswer === undefined) return;
+
+        let isCorrect = false;
+        if (q.type === 'multiple-answer') {
+            if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+                const sortedUserAnswer = [...userAnswer].sort();
+                const sortedCorrectAnswer = [...correctAnswer].sort();
+                if (JSON.stringify(sortedUserAnswer) === JSON.stringify(sortedCorrectAnswer)) {
+                    isCorrect = true;
+                }
+            }
+        } else if (q.type === 'fill-in-the-blank') {
+            if (typeof userAnswer === 'string' && typeof correctAnswer === 'string') {
+                if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
+                    isCorrect = true;
+                }
+            }
+        } else { // multiple-choice, true-false, etc.
+            if (userAnswer === correctAnswer) {
+                isCorrect = true;
+            }
+        }
+
+        if (isCorrect) {
+            score += q.points;
+            correctAnswers++;
         }
     });
 
