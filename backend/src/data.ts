@@ -4,6 +4,7 @@ const mockQuestions: Question[] = [
   {
     id: '1',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'کدام یک از موارد زیر یک فعل کمکی در زبان انگلیسی است؟',
     type: 'multiple-choice',
     options: ['Run', 'Have', 'Book', 'Student'],
@@ -13,6 +14,7 @@ const mockQuestions: Question[] = [
   {
     id: '2',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'جمله "She ___ to school every day" با کدام فعل کامل می‌شود؟',
     type: 'multiple-choice',
     options: ['go', 'goes', 'going', 'gone'],
@@ -22,6 +24,7 @@ const mockQuestions: Question[] = [
   {
     id: '3',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'کلمه "Beautiful" چه نوع کلمه‌ای است؟',
     type: 'multiple-choice',
     options: ['اسم', 'فعل', 'صفت', 'قید'],
@@ -57,6 +60,7 @@ const mockPythonQuestions: Question[] = [
   {
     id: 'p1',
     examId: '2',
+    category: 'برنامه‌نویسی',
     text: 'کدام نوع داده برای ذخیره مقادیر صحیح در پایتون استفاده می‌شود؟',
     type: 'multiple-choice',
     options: ['float', 'str', 'int', 'bool'],
@@ -66,6 +70,7 @@ const mockPythonQuestions: Question[] = [
   {
     id: 'p2',
     examId: '2',
+    category: 'برنامه‌نویسی',
     text: 'خروجی کد `print(len("hello"))` چیست؟',
     type: 'multiple-choice',
     options: ['5', '4', 'hello', 'Error'],
@@ -87,6 +92,7 @@ const mockMathQuestions: Question[] = [
   {
     id: 'm1',
     examId: '3',
+    category: 'ریاضیات',
     text: 'مشتق تابع f(x) = x^2 چیست؟',
     type: 'multiple-choice',
     options: ['2x', 'x', 'x^3 / 3', '2'],
@@ -120,8 +126,8 @@ export const mockExams: Exam[] = [
     instructor: 'دکتر رضایی',
     participants: 1250,
     rating: 4.8,
-    startDate: '1403/02/20',
-    endDate: '1403/02/25',
+    startDate: '2024-05-09T10:00',
+    endDate: '2024-05-14T23:59',
     tags: ['گرامر', 'واژگان', 'درک مطلب'],
     questions: mockQuestions,
   },
@@ -244,6 +250,12 @@ export const mockExams: Exam[] = [
     tags: ['الگوریتم', 'داده‌ساختار', 'جاوا'],
     questions: [],
   }
+];
+
+export const mockAllQuestions: Question[] = [
+    ...mockQuestions,
+    ...mockPythonQuestions,
+    ...mockMathQuestions,
 ];
 
 export const mockCategories: Category[] = [
