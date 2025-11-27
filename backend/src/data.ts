@@ -4,6 +4,7 @@ const mockQuestions: Question[] = [
   {
     id: '1',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'کدام یک از موارد زیر یک فعل کمکی در زبان انگلیسی است؟',
     type: 'multiple-choice',
     options: ['Run', 'Have', 'Book', 'Student'],
@@ -13,6 +14,7 @@ const mockQuestions: Question[] = [
   {
     id: '2',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'جمله "She ___ to school every day" با کدام فعل کامل می‌شود؟',
     type: 'multiple-choice',
     options: ['go', 'goes', 'going', 'gone'],
@@ -22,6 +24,7 @@ const mockQuestions: Question[] = [
   {
     id: '3',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'کلمه "Beautiful" چه نوع کلمه‌ای است؟',
     type: 'multiple-choice',
     options: ['اسم', 'فعل', 'صفت', 'قید'],
@@ -31,6 +34,7 @@ const mockQuestions: Question[] = [
   {
     id: '4',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'Past Simple زمان "eat" چیست؟',
     type: 'multiple-choice',
     options: ['eated', 'ate', 'eaten', 'eating'],
@@ -40,6 +44,7 @@ const mockQuestions: Question[] = [
   {
     id: '5',
     examId: '1',
+    category: 'زبان انگلیسی',
     text: 'کدام جمله صحیح است؟',
     type: 'multiple-choice',
     options: [
@@ -57,6 +62,7 @@ const mockPythonQuestions: Question[] = [
   {
     id: 'p1',
     examId: '2',
+    category: 'برنامه‌نویسی',
     text: 'کدام نوع داده برای ذخیره مقادیر صحیح در پایتون استفاده می‌شود؟',
     type: 'multiple-choice',
     options: ['float', 'str', 'int', 'bool'],
@@ -66,6 +72,7 @@ const mockPythonQuestions: Question[] = [
   {
     id: 'p2',
     examId: '2',
+    category: 'برنامه‌نویسی',
     text: 'خروجی کد `print(len("hello"))` چیست؟',
     type: 'multiple-choice',
     options: ['5', '4', 'hello', 'Error'],
@@ -75,6 +82,7 @@ const mockPythonQuestions: Question[] = [
   {
     id: 'p3',
     examId: '2',
+    category: 'برنامه‌نویسی',
     text: 'کدام کلمه کلیدی برای تعریف یک تابع در پایتون استفاده می‌شود؟',
     type: 'multiple-choice',
     options: ['fun', 'def', 'function', 'define'],
@@ -87,6 +95,7 @@ const mockMathQuestions: Question[] = [
   {
     id: 'm1',
     examId: '3',
+    category: 'ریاضیات',
     text: 'مشتق تابع f(x) = x^2 چیست؟',
     type: 'multiple-choice',
     options: ['2x', 'x', 'x^3 / 3', '2'],
@@ -96,10 +105,21 @@ const mockMathQuestions: Question[] = [
   {
     id: 'm2',
     examId: '3',
+    category: 'ریاضیات',
     text: 'حاصل انتگرال ∫(1)dx چیست؟',
     type: 'multiple-choice',
     options: ['x + C', '1 + C', '0', 'x^2 + C'],
     correctAnswer: 0,
+    points: 5
+  },
+  {
+    id: 'm3',
+    examId: '3',
+    category: 'ریاضیات',
+    text: 'کدام یک از موارد زیر جزو اعداد اول هستند؟ (چند جوابی)',
+    type: 'multiple-answer',
+    options: ['2', '4', '7', '9'],
+    correctAnswer: [0, 2],
     points: 5
   }
 ];
@@ -244,6 +264,12 @@ export const mockExams: Exam[] = [
     tags: ['الگوریتم', 'داده‌ساختار', 'جاوا'],
     questions: [],
   }
+];
+
+export const mockAllQuestions: Question[] = [
+    ...mockQuestions,
+    ...mockPythonQuestions,
+    ...mockMathQuestions,
 ];
 
 export const mockCategories: Category[] = [

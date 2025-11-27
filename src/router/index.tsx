@@ -22,6 +22,7 @@ const AdminLayout = lazy(() => import('../features/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('../features/admin/AdminDashboard'));
 const UserManagement = lazy(() => import('../features/admin/UserManagement'));
 const ExamManagement = lazy(() => import('../features/admin/ExamManagement'));
+const QuestionBank = lazy(() => import('../features/admin/QuestionBank'));
 const CategoryManagement = lazy(() => import('../features/admin/CategoryManagement'));
 const Settings = lazy(() => import('../features/admin/Settings'));
 
@@ -72,6 +73,7 @@ export const router = createBrowserRouter([
           { index: true, element: <SuspenseWrapper><AdminDashboard /></SuspenseWrapper> },
           { path: 'users', element: <SuspenseWrapper><UserManagement /></SuspenseWrapper> },
           { path: 'exams', element: <SuspenseWrapper><ExamManagement /></SuspenseWrapper> },
+          { path: 'questions', element: <SuspenseWrapper><QuestionBank /></SuspenseWrapper> },
           { path: 'categories', element: <SuspenseWrapper><CategoryManagement /></SuspenseWrapper> },
           { path: 'settings', element: <SuspenseWrapper><Settings /></SuspenseWrapper> },
         ],
