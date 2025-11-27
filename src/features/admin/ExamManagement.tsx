@@ -208,8 +208,14 @@ export default function ExamManagement() {
                     <Input label="دسته بندی" name="category" defaultValue={currentExam?.category} required />
                     <Input label="سطح" name="level" defaultValue={currentExam?.level} required />
                     <Input label="مدت زمان (دقیقه)" name="duration" type="number" defaultValue={currentExam?.duration || 60} required />
-                    <Input label="توضیحات" name="description" defaultValue={currentExam?.description} />
-                    <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} />
+                    <Input label="نمره قبولی" name="passingScore" type="number" defaultValue={currentExam?.passingScore || 50} required />
+                    <Input label="قیمت (تومان)" name="price" type="number" defaultValue={currentExam?.price || 0} />
+                    <Input label="آدرس تصویر" name="imageUrl" defaultValue={currentExam?.imageUrl} />
+                    <Input label="مدرس" name="instructor" defaultValue={currentExam?.instructor} />
+                    <Input label="تاریخ شروع" name="startDate" type="datetime-local" defaultValue={currentExam?.startDate?.slice(0, 16)} />
+                    <Input label="تاریخ پایان" name="endDate" type="datetime-local" defaultValue={currentExam?.endDate?.slice(0, 16)} />
+                    <Input label="توضیحات" name="description" defaultValue={currentExam?.description} className="md:col-span-2" />
+                    <Input label="تگ ها (با ویرگول جدا کنید)" name="tags" defaultValue={currentExam?.tags?.join(', ')} className="md:col-span-2" />
                 </div>
 
                 <div className="border-t pt-6">

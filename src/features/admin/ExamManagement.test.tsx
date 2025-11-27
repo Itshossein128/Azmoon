@@ -64,4 +64,18 @@ describe('ExamManagement with QuestionSelector', () => {
     expect(screen.queryByText('React Question 1')).not.toBeInTheDocument();
     expect(await screen.findByText('React Question 2')).toBeInTheDocument();
   });
+
+  it('should render all form fields in the modal', async () => {
+    renderWithRouter(<ExamManagement />);
+
+    // Open the modal
+    fireEvent.click(await screen.findByText('افزودن آزمون'));
+    expect(await screen.findByText('افزودن آزمون جدید')).toBeInTheDocument();
+
+    // Check for some of the added fields
+    expect(screen.getByLabelText('نمره قبولی')).toBeInTheDocument();
+    expect(screen.getByLabelText('قیمت (تومان)')).toBeInTheDocument();
+    expect(screen.getByLabelText('تاریخ شروع')).toBeInTheDocument();
+    expect(screen.getByLabelText('مدرس')).toBeInTheDocument();
+  });
 });
