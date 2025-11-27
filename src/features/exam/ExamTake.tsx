@@ -21,7 +21,7 @@ export default function ExamTake() {
   const [error, setError] = useState<string | null>(null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: string]: number }>({});
+  const [answers, setAnswers] = useState<{ [key: string]: number | number[] | string }>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -58,8 +58,21 @@ export default function ExamTake() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const handleAnswerSelect = (questionId: string, optionIndex: number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
+  const handleAnswerChange = (questionId: string, value: number | number[] | string) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleMultiChoiceAnswer = (question: Question, optionIndex: number) => {
+    const questionId = question.id;
+    if (question.type === 'multiple-answer') {
+        const currentAnswers = (answers[questionId] as number[] | undefined) || [];
+        const newAnswers = currentAnswers.includes(optionIndex)
+            ? currentAnswers.filter(ans => ans !== optionIndex)
+            : [...currentAnswers, optionIndex];
+        handleAnswerChange(questionId, newAnswers);
+    } else {
+        handleAnswerChange(questionId, optionIndex);
+    }
   };
 
   const goToNextQuestion = () => {
@@ -152,21 +165,42 @@ export default function ExamTake() {
               </Button>
             </div>
             <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">{currentQuestion.text}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {currentQuestion.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(currentQuestion.id, index)}
-                  className={`p-4 rounded-lg text-right border-2 transition-all duration-200 ${
-                    answers[currentQuestion.id] === index
-                      ? 'bg-primary-500 border-primary-500 text-white shadow-lg scale-105'
-                      : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+
+            {currentQuestion.type === 'fill-in-the-blank' ? (
+                <div className="mt-4">
+                    <Input
+                        type="text"
+                        placeholder="پاسخ خود را اینجا وارد کنید..."
+                        value={(answers[currentQuestion.id] as string) || ''}
+                        onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                    />
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {currentQuestion.options?.map((option, index) => {
+                    const isSelected = currentQuestion.type === 'multiple-answer'
+                        ? ((answers[currentQuestion.id] as number[]) || []).includes(index)
+                        : answers[currentQuestion.id] === index;
+
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => handleMultiChoiceAnswer(currentQuestion, index)}
+                            className={`p-4 rounded-lg text-right border-2 transition-all duration-200 flex items-center gap-4 ${
+                                isSelected
+                                    ? 'bg-primary-500 border-primary-500 text-white shadow-lg scale-105'
+                                    : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-600'
+                            }`}
+                        >
+                            <div className={`w-6 h-6 flex-shrink-0 rounded-md border-2 flex items-center justify-center ${isSelected ? 'border-white bg-white' : 'border-gray-400'}`}>
+                                {isSelected && <div className="w-3 h-3 rounded-md bg-white"></div>}
+                            </div>
+                            <span className="flex-grow">{option}</span>
+                        </button>
+                    );
+                })}
+                </div>
+            )}
           </div>
 
           <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">

@@ -47,9 +47,35 @@ router.post('/results', (req, res) => {
     let score = 0;
     let correctAnswers = 0;
     exam.questions.forEach(q => {
-        if (answers[q.id] === q.correctAnswer) {
-        score += q.points;
-        correctAnswers++;
+        const userAnswer = answers[q.id];
+        const correctAnswer = q.correctAnswer;
+
+        if (userAnswer === undefined) return;
+
+        let isCorrect = false;
+        if (q.type === 'multiple-answer') {
+            if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+                const sortedUserAnswer = [...userAnswer].sort();
+                const sortedCorrectAnswer = [...correctAnswer].sort();
+                if (JSON.stringify(sortedUserAnswer) === JSON.stringify(sortedCorrectAnswer)) {
+                    isCorrect = true;
+                }
+            }
+        } else if (q.type === 'fill-in-the-blank') {
+            if (typeof userAnswer === 'string' && typeof correctAnswer === 'string') {
+                if (userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()) {
+                    isCorrect = true;
+                }
+            }
+        } else { // multiple-choice, true-false, etc.
+            if (userAnswer === correctAnswer) {
+                isCorrect = true;
+            }
+        }
+
+        if (isCorrect) {
+            score += q.points;
+            correctAnswers++;
         }
     });
 
