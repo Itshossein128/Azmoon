@@ -30,34 +30,38 @@ export interface Exam {
 export interface Question {
   id: string;
   examId: string;
+  category?: string;
   text: string;
-  type: 'multiple-choice' | 'true-false' | 'essay';
+  type: QuestionType;
   options?: string[];
-  correctAnswer?: number;
+  correctAnswer?: number | number[] | string;
   points: number;
   imageUrl?: string;
+  gradingCriteria?: string;
 }
 
 export interface Result {
   id: string;
   examId: string;
   userId: string;
-  score: number;
-  totalScore: number;
-  percentage: number;
-  passed: boolean;
+  status: 'graded' | 'pending_review';
+  score?: number;
+  totalScore?: number;
+  percentage?: number;
+  passed?: boolean;
   completedAt: string;
   timeSpent: number;
-  answers: number[];
-  correctAnswers: number;
+  answers: UserAnswer[];
+  correctAnswers?: number;
   examTitle?: string;
 }
 
 export interface UserAnswer {
   questionId: string;
-  answer: number | string;
-  isCorrect: boolean;
+  answer: number | string | string[];
+  isCorrect?: boolean;
   points: number;
+  score?: number; // Score given by the grader for essay questions
 }
 
 export interface Category {
@@ -67,3 +71,5 @@ export interface Category {
   count: number;
   isFeatured?: boolean;
 }
+
+export type QuestionType = 'multiple-choice' | 'multiple-answer' | 'fill-in-the-blank' | 'essay-with-upload' | 'true-false' | 'essay';
