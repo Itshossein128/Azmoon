@@ -27,37 +27,51 @@ export interface Exam {
   questions: Question[];
 }
 
+export interface TestCase {
+  input: string;
+  expectedOutput: string;
+  isSample?: boolean; // To show to the user
+}
+
 export interface Question {
   id: string;
   examId: string;
+  category?: string;
   text: string;
-  type: 'multiple-choice' | 'true-false' | 'essay';
-  options?: string[];
-  correctAnswer?: number;
+  type: QuestionType;
+  options?: string[]; // Used for multiple-choice, multiple-answer, and matching
+  prompts?: string[]; // Used for matching questions (the items to be matched)
+  correctAnswer?: number | number[] | string;
   points: number;
-  imageUrl?: string;
+  mediaUrl?: string; // URL for image, video, or audio
+  gradingCriteria?: string;
+  // For coding questions
+  language?: 'javascript' | 'python';
+  testCases?: TestCase[];
 }
 
 export interface Result {
   id: string;
   examId: string;
   userId: string;
-  score: number;
-  totalScore: number;
-  percentage: number;
-  passed: boolean;
+  status: 'graded' | 'pending_review';
+  score?: number;
+  totalScore?: number;
+  percentage?: number;
+  passed?: boolean;
   completedAt: string;
   timeSpent: number;
-  answers: number[];
-  correctAnswers: number;
+  answers: UserAnswer[];
+  correctAnswers?: number;
   examTitle?: string;
 }
 
 export interface UserAnswer {
   questionId: string;
-  answer: number | string;
-  isCorrect: boolean;
+  answer: number | string | string[];
+  isCorrect?: boolean;
   points: number;
+  score?: number; // Score given by the grader for essay questions
 }
 
 export interface Category {
@@ -67,3 +81,5 @@ export interface Category {
   count: number;
   isFeatured?: boolean;
 }
+
+export type QuestionType = 'multiple-choice' | 'multiple-answer' | 'fill-in-the-blank' | 'essay-with-upload' | 'true-false' | 'essay' | 'matching' | 'coding';
