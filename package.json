@@ -9,10 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "test": "vitest run"
+    "test": "vitest run src"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.2.2",
     "axios": "^1.13.2",
     "framer-motion": "^12.23.24",
