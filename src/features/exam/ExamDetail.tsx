@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Exam } from '../../../shared/types';
+import { Exam, Question, QuestionType } from '../../../shared/types';
 import Button from '../../components/ui/Button';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
@@ -37,6 +37,22 @@ export default function ExamDetail() {
     if (error) return <Alert message={error} type="error" />;
     if (!exam) return <Alert message="آزمون یافت نشد" type="error" />;
 
+const questionTypeCounts = (exam.questions || []).reduce((acc, question) => {
+    acc[question.type] = (acc[question.type] || 0) + 1;
+    return acc;
+}, {} as Record<QuestionType, number>);
+
+const questionTypeTranslations: Record<QuestionType, string> = {
+    'multiple-choice': 'چند گزینه‌ای',
+    'multiple-answer': 'چند جوابی',
+    'fill-in-the-blank': 'جای خالی',
+    'essay': 'تشریحی',
+    'essay-with-upload': 'تشریحی با آپلود فایل',
+    'true-false': 'صحیح/غلط',
+    'matching': 'جورکردنی',
+};
+
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
@@ -54,12 +70,28 @@ export default function ExamDetail() {
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                                 <DetailItem label="سطح" value={exam.level} />
                                 <DetailItem label="مدت زمان" value={`${exam.duration} دقیقه`} />
-                                <DetailItem label="تعداد سوالات" value={`${exam.questions.length} سوال`} />
+                            <DetailItem label="مجموع سوالات" value={`${exam.questions.length} سوال`} />
                                 <DetailItem label="نمره قبولی" value={`${exam.passingScore}%`} />
                                 <DetailItem label="مدرس" value={exam.instructor} />
                                 <DetailItem label="قیمت" value={exam.price === 0 ? 'رایگان' : `${exam.price.toLocaleString()} تومان`} />
                             </div>
                         </div>
+
+                    {Object.keys(questionTypeCounts).length > 0 && (
+                        <div className="mt-6">
+                            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">انواع سوالات</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                {Object.entries(questionTypeCounts).map(([type, count]) => (
+                                    <DetailItem
+                                        key={type}
+                                        label={questionTypeTranslations[type as QuestionType]}
+                                        value={`${count} سوال`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
 
                         <div className="mt-8 pt-8 border-t dark:border-gray-700">
                            <Link to={`/exams/take/${exam.id}`} className="block">
