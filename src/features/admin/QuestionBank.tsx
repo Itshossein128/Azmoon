@@ -43,6 +43,7 @@ export default function QuestionBank() {
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
 
   const [formData, setFormData] = useState<QuestionFormData>(initialFormState);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
 
   const questionsPerPage = 10;
 
@@ -124,23 +125,47 @@ export default function QuestionBank() {
 
     if (formData.type === 'multiple-choice') {
         questionData.correctAnswer = Number(formData.correctAnswerRadio);
+        questionData.options = formData.options;
     } else if (formData.type === 'multiple-answer') {
         questionData.correctAnswer = formData.correctAnswerCheckbox.map((checked, i) => checked ? i : -1).filter(i => i !== -1);
     } else if (formData.type === 'matching') {
         questionData.options = formData.options.filter(o => o.trim() !== '');
         questionData.prompts = formData.prompts?.filter(p => p.trim() !== '');
-        // correctAnswer is already set in state for matching
     }
-    // Cleanup unnecessary fields
+
+    // Cleanup unnecessary fields from the final object
     delete (questionData as any).correctAnswerRadio;
     delete (questionData as any).correctAnswerCheckbox;
+    if (formData.type !== 'matching' && formData.type !== 'multiple-choice' && formData.type !== 'multiple-answer') {
+        delete questionData.options;
+    }
+    if (formData.type !== 'matching') {
+        delete questionData.prompts;
+    }
+
+    const finalFormData = new FormData();
+    if (mediaFile) {
+        finalFormData.append('mediaFile', mediaFile);
+    }
+
+    // Append other data, stringifying only arrays/objects
+    for (const key in questionData) {
+        const value = (questionData as any)[key];
+        if (key !== 'mediaFile' && value !== undefined && value !== null) {
+            if (Array.isArray(value) || (typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype)) {
+                finalFormData.append(key, JSON.stringify(value));
+            } else {
+                 finalFormData.append(key, String(value));
+            }
+        }
+    }
 
     try {
         const toastId = toast.loading('در حال ذخیره سوال...');
         if (modalMode === 'add') {
-            await axios.post(`${API_URL}/questions`, questionData);
+            await axios.post(`${API_URL}/questions`, finalFormData, { headers: { 'Content-Type': 'multipart/form-data' } });
         } else if (formData.id) {
-            await axios.put(`${API_URL}/questions/${formData.id}`, questionData);
+            await axios.put(`${API_URL}/questions/${formData.id}`, finalFormData, { headers: { 'Content-Type': 'multipart/form-data' } });
         }
         toast.success('سوال با موفقیت ذخیره شد', { id: toastId });
         fetchData();
@@ -214,7 +239,11 @@ export default function QuestionBank() {
         <Modal isOpen={isModalOpen} onClose={closeModal} title={modalMode === 'add' ? 'افزودن سوال' : 'ویرایش سوال'}>
             <form onSubmit={handleFormSubmit} className="space-y-4">
                 <Input name="text" label="متن سوال" value={formData.text} onChange={handleInputChange} required />
-                <Input name="mediaUrl" label="آدرس فایل رسانه‌ای (اختیاری)" value={formData.mediaUrl || ''} onChange={handleInputChange} placeholder="https://example.com/image.jpg" />
+                <div>
+                    <label htmlFor="media-file-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">فایل رسانه‌ای (اختیاری)</label>
+                    <input id="media-file-input" type="file" onChange={(e) => setMediaFile(e.target.files ? e.target.files[0] : null)} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"/>
+                    {formData.mediaUrl && !mediaFile && <p className="text-xs mt-1">فایل فعلی: {formData.mediaUrl}</p>}
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                     <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                         <option value="">انتخاب دسته‌بندی</option>

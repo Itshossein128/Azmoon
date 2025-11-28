@@ -17,14 +17,17 @@ const renderMedia = (url: string) => {
     const extension = url.split('.').pop()?.toLowerCase();
     if (!extension) return null;
 
+    // Construct absolute URL if it's a relative path from our server
+    const fullUrl = url.startsWith('/uploads') ? `${API_URL.replace('/api', '')}${url}` : url;
+
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
-        return <img src={url} alt="Question media" className="max-w-full rounded-lg mb-4" />;
+        return <img src={fullUrl} alt="Question media" className="max-w-full rounded-lg mb-4" />;
     }
     if (['mp4', 'webm', 'ogg'].includes(extension)) {
-        return <video controls src={url} className="max-w-full rounded-lg mb-4" />;
+        return <video controls src={fullUrl} className="max-w-full rounded-lg mb-4" />;
     }
     if (['mp3', 'wav', 'ogg'].includes(extension)) {
-        return <audio controls src={url} className="w-full mb-4" />;
+        return <audio controls src={fullUrl} className="w-full mb-4" />;
     }
     return null;
 };

@@ -1,14 +1,30 @@
 import express from 'express';
 import multer from 'multer';
-import xlsx from 'xlsx';
-import csv from 'csv-parser';
-import { Readable } from 'stream';
+import path from 'path';
+import fs from 'fs';
 import { mockAllQuestions } from '../data'; // Assuming mockAllQuestions is exported from data.ts
 import { Question } from '../../../shared/types';
 import crypto from 'crypto';
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage });
+
 
 // Get all questions
 router.get('/questions', (req, res) => {
@@ -16,21 +32,56 @@ router.get('/questions', (req, res) => {
 });
 
 // Create question
-router.post('/questions', (req, res) => {
-    const newQuestion: Question = {
+router.post('/questions', upload.single('mediaFile'), (req, res) => {
+    const questionData = { ...req.body };
+    // Manually parse fields that we expect to be JSON
+    ['options', 'prompts', 'correctAnswer', 'tags'].forEach(key => {
+        if (questionData[key]) {
+            try {
+                questionData[key] = JSON.parse(questionData[key]);
+            } catch {}
+        }
+    });
+
+    const newQuestion: Partial<Question> = {
         id: crypto.randomUUID(),
-        ...req.body
+        ...questionData
     };
-    mockAllQuestions.push(newQuestion);
+
+    if (req.file) {
+        newQuestion.mediaUrl = `/uploads/${req.file.filename}`;
+    }
+
+    mockAllQuestions.push(newQuestion as Question);
     res.status(201).json(newQuestion);
 });
 
 // Update question
-router.put('/questions/:id', (req, res) => {
+router.put('/questions/:id', upload.single('mediaFile'), (req, res) => {
     const questionIndex = mockAllQuestions.findIndex(q => q.id === req.params.id);
     if (questionIndex !== -1) {
-        mockAllQuestions[questionIndex] = { ...mockAllQuestions[questionIndex], ...req.body };
-        res.json(mockAllQuestions[questionIndex]);
+        const questionData = { ...req.body };
+        ['options', 'prompts', 'correctAnswer', 'tags'].forEach(key => {
+            if (questionData[key]) {
+                try {
+                    questionData[key] = JSON.parse(questionData[key]);
+                } catch {}
+            }
+        });
+
+        const updatedQuestion = { ...mockAllQuestions[questionIndex], ...questionData };
+
+        if (req.file) {
+            // Optional: delete old file if it exists
+            const oldFilePath = mockAllQuestions[questionIndex].mediaUrl;
+            if (oldFilePath) {
+                fs.unlink(path.join(__dirname, '../..', oldFilePath), () => {});
+            }
+            updatedQuestion.mediaUrl = `/uploads/${req.file.filename}`;
+        }
+
+        mockAllQuestions[questionIndex] = updatedQuestion;
+        res.json(updatedQuestion);
     } else {
         res.status(404).send('Question not found');
     }
