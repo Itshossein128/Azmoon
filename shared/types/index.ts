@@ -5,6 +5,7 @@ export interface User {
   avatar?: string;
   role: 'student' | 'teacher' | 'admin';
   registeredAt: string;
+  balance: number;
 }
 
 export interface Exam {
