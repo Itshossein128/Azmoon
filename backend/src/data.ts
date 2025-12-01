@@ -350,6 +350,7 @@ export let mockUsers: User[] = [
     role: 'admin',
     registeredAt: '1402/10/01',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+    balance: 100000,
   },
   {
     id: '2',
@@ -358,6 +359,7 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/01/15',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+    balance: 50000,
   },
   {
     id: '3',
@@ -366,6 +368,7 @@ export let mockUsers: User[] = [
     role: 'teacher',
     registeredAt: '1402/11/20',
     avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+    balance: 25000,
   },
     {
     id: '4',
@@ -374,5 +377,6 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/02/05',
     avatar: 'https://i.pravatar.cc/150?u=a048581f4e29026701d',
+    balance: 0,
   },
 ];
