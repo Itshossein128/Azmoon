@@ -1,14 +1,15 @@
 import React, { createContext, useContext } from 'react';
+import axios from 'axios';
 import { useUserStore } from '../store/userStore';
-import { User } from '../../shared/types';
+import { API_URL } from '../config/api';
 
 interface AuthContextType {
-  login: (user: User) => void;
+  login: (email: string, password?: string) => Promise<void>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  login: () => {},
+  login: async () => {},
   logout: () => {},
 });
 
@@ -17,8 +18,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { setUser } = useUserStore();
 
-  const login = (user: User) => {
-    setUser(user);
+  const login = async (email: string, password?: string) => {
+    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+    setUser(response.data);
   };
 
   const logout = () => {

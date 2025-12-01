@@ -5,6 +5,7 @@ export interface User {
   avatar?: string;
   role: 'student' | 'teacher' | 'admin';
   registeredAt: string;
+  balance: number;
 }
 
 export interface Exam {
@@ -83,3 +84,11 @@ export interface Category {
 }
 
 export type QuestionType = 'multiple-choice' | 'multiple-answer' | 'fill-in-the-blank' | 'essay-with-upload' | 'true-false' | 'essay' | 'matching' | 'coding';
+
+export interface DiscountCode {
+  id: string;
+  code: string;
+  discountPercentage: number;
+  validUntil: string; // ISO 8601 format
+  examId?: string; // Optional: If the code is specific to one exam
+}

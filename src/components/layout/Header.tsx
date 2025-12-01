@@ -95,6 +95,18 @@ export default function Header() {
                           </Link>
                         )}
                       </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            to="/wallet"
+                            className={`${
+                              active ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          >
+                            کیف پول
+                          </Link>
+                        )}
+                      </Menu.Item>
                     </div>
                     <div className="p-1">
                       <Menu.Item>
