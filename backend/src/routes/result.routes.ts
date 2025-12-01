@@ -18,7 +18,7 @@ if (!fs.existsSync(codeDir)) {
 
 const runCodeInSandbox = (filePath: string, language: string, testInput: string): Promise<{ output: string; error?: string }> => {
     return new Promise((resolve) => {
-        const command = language === 'javascript' ? 'node' --input-type=module -' : 'python';
+        const command = language === 'javascript' ? 'node' : 'python';
         const child = spawn(command, [filePath]);
         let output = '';
         let error = '';
