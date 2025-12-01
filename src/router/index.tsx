@@ -13,6 +13,7 @@ const ResultDetail = lazy(() => import('../features/results/ResultDetail'));
 const PendingReview = lazy(() => import('../features/results/PendingReview'));
 const Dashboard = lazy(() => import('../features/dashboard/Dashboard'));
 const Profile = lazy(() => import('../features/user/Profile'));
+const Wallet = lazy(() => import('../features/Wallet'));
 const About = lazy(() => import('../features/about/About'));
 const Login = lazy(() => import('../features/auth/Login'));
 const Register = lazy(() => import('../features/auth/Register'));
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
           { path: 'results/pending-review', element: <SuspenseWrapper><PendingReview /></SuspenseWrapper> },
           { path: 'dashboard', element: <SuspenseWrapper><Dashboard /></SuspenseWrapper> },
           { path: 'profile', element: <SuspenseWrapper><Profile /></SuspenseWrapper> },
+          { path: 'wallet', element: <SuspenseWrapper><Wallet /></SuspenseWrapper> },
           { path: 'about', element: <SuspenseWrapper><About /></SuspenseWrapper> },
         ],
       },
