@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Settings, Folder, Database, FileCheck } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, Folder, Database, FileCheck, Percent } from 'lucide-react';
 import Header from '../../components/layout/Header';
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { name: 'بانک سوالات', to: '/admin/questions', icon: Database },
   { name: 'تصحیح آزمون‌ها', to: '/admin/grading', icon: FileCheck },
   { name: 'مدیریت دسته‌بندی‌ها', to: '/admin/categories', icon: Folder },
+  { name: 'کدهای تخفیف', to: '/admin/discounts', icon: Percent },
   { name: 'تنظیمات', to: '/admin/settings', icon: Settings },
 ];
 

@@ -14,27 +14,25 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Mock authentication
-    setTimeout(() => {
-      if (email === 'test@test.com' && password === 'password') {
-        login({
-          id: '1',
-          name: 'Test User',
-          email,
-          role: 'admin',
-          registeredAt: new Date().toISOString(),
-        });
+    try {
+      await login(email, password);
+      // Redirect based on role, or to a default page
+      // This is a simplified example.
+      if (email.startsWith('admin')) {
         navigate('/admin');
       } else {
-        setError('Invalid email or password');
+        navigate('/');
       }
+    } catch (err) {
+      setError('ایمیل یا رمز عبور نامعتبر است');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
