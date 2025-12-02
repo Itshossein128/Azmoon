@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useUserStore } from '../../store/userStore';
 import { Exam, Question, QuestionType } from '../../../shared/types';
+import toast from 'react-hot-toast';
 import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
 import Spinner from '../../components/ui/Spinner';
 import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
@@ -13,6 +16,54 @@ export default function ExamDetail() {
     const [exam, setExam] = useState<Exam | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [discountCode, setDiscountCode] = useState('');
+    const [appliedDiscount, setAppliedDiscount] = useState(0);
+    const [finalPrice, setFinalPrice] = useState<number | null>(null);
+    const navigate = useNavigate();
+    const { user } = useUserStore();
+
+    const handleStartExam = async () => {
+        if (!exam || !user) {
+            toast.error('برای شروع آزمون باید وارد شوید.');
+            return;
+        }
+
+        const priceToPay = finalPrice ?? exam.price;
+
+        if (priceToPay > 0) {
+            try {
+                await axios.post(`${API_URL}/wallet/purchase`, {
+                    userId: user.id,
+                    examPrice: priceToPay,
+                });
+                toast.success('هزینه آزمون با موفقیت از کیف پول شما کسر شد.');
+            } catch (err: any) {
+                toast.error(err.response?.data?.message || 'خطا در پرداخت هزینه آزمون');
+                return; // Stop if payment fails
+            }
+        }
+
+        navigate(`/exams/take/${exam.id}`);
+    };
+
+    const handleApplyDiscount = async () => {
+        if (!discountCode.trim() || !exam) return;
+        try {
+            const response = await axios.post(`${API_URL}/discounts/validate`, {
+                code: discountCode,
+                examId: exam.id,
+            });
+            const { discountPercentage } = response.data;
+            setAppliedDiscount(discountPercentage);
+            const discountedPrice = exam.price - (exam.price * discountPercentage / 100);
+            setFinalPrice(discountedPrice);
+            toast.success(response.data.message);
+        } catch (err: any) {
+            setAppliedDiscount(0);
+            setFinalPrice(null);
+            toast.error(err.response?.data?.message || 'خطا در اعمال کد تخفیف');
+        }
+    };
 
     useEffect(() => {
         const fetchExam = async () => {
@@ -93,13 +144,35 @@ const questionTypeTranslations: Record<QuestionType, string> = {
                     )}
 
 
+                        <div className="mt-6 pt-6 border-t dark:border-gray-700">
+                            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">کد تخفیف</h3>
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    label="کد تخفیف خود را وارد کنید"
+                                    placeholder="کد تخفیف"
+                                    value={discountCode}
+                                    onChange={(e) => setDiscountCode(e.target.value)}
+                                    className="flex-grow"
+                                />
+                                <Button onClick={handleApplyDiscount} variant="secondary">اعمال</Button>
+                            </div>
+                            {appliedDiscount > 0 && (
+                                <div className="mt-4 text-green-600 dark:text-green-400">
+                                    <p>{`تخفیف ${appliedDiscount}% با موفقیت اعمال شد.`}</p>
+                                    <p className="font-bold">{`قیمت نهایی: ${finalPrice?.toLocaleString()} تومان`}</p>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="mt-8 pt-8 border-t dark:border-gray-700">
-                           <Link to={`/exams/take/${exam.id}`} className="block">
-                             <Button size="lg" className="w-full text-lg py-4 px-8 flex items-center justify-center bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full">
-                                <PlayCircle className="ml-3" size={28} />
-                                <span className="font-bold tracking-wider">شروع آزمون</span>
-                             </Button>
-                           </Link>
+                           <Button
+                             size="lg"
+                             className="w-full text-lg py-4 px-8 flex items-center justify-center bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full"
+                             onClick={handleStartExam}
+                           >
+                             <PlayCircle className="ml-3" size={28} />
+                             <span className="font-bold tracking-wider">شروع آزمون</span>
+                           </Button>
                         </div>
                     </div>
                 </div>

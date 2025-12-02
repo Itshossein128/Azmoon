@@ -7,6 +7,9 @@ import examRoutes from './src/routes/exam.routes';
 import resultRoutes from './src/routes/result.routes';
 import categoryRoutes from './src/routes/category.routes';
 import questionRoutes from './src/routes/question.routes';
+import walletRoutes from './src/routes/wallet.routes';
+import authRoutes from './src/routes/auth.routes';
+import discountRoutes from './src/routes/discount.routes';
 import executionRoutes from './srcsrc/routes/execution.routes';
 
 const app = express();
@@ -25,6 +28,9 @@ app.use('/api', examRoutes);
 app.use('/api', resultRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', questionRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api', authRoutes);
+app.use('/api', discountRoutes);
 app.use('/api', executionRoutes);
 
 app.get('/', (req, res) => {
