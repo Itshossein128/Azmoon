@@ -1,4 +1,72 @@
-import { User, Exam, Category, Result, Question } from '../../shared/types';
+import { User, Exam, Category, Result, Question, DiscountCode, SubscriptionPlan } from '../../shared/types';
+
+export const mockSubscriptionPlans: SubscriptionPlan[] = [
+  {
+    id: 'free',
+    name: 'پلان رایگان',
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    features: ['3 آزمون در ماه', '1 دوره آموزشی', 'بدون اولویت ساپورت', 'مدت: نامحدود'],
+  },
+  {
+    id: 'pro',
+    name: '🌟 پلان پرو',
+    monthlyPrice: 50000,
+    yearlyPrice: 450000,
+    features: ['20 آزمون در ماه', '10 دوره آموزشی', 'ساپورت 24/7', 'گواهینامه دیجیتال'],
+  },
+  {
+    id: 'premium',
+    name: '👑 پلان پریمیوم',
+    monthlyPrice: 100000,
+    yearlyPrice: 900000,
+    features: ['آزمون نامحدود', 'دوره نامحدود', 'ساپورت ویژه مشاور شخصی', 'گزارشات پیشرفتۀ تفصیلی', 'دانلود منابع'],
+  },
+];
+
+export const mockDiscountCodes: DiscountCode[] = [
+  {
+    id: '1',
+    code: 'WELCOME',
+    type: 'percentage',
+    value: 20,
+    maxValue: 50000,
+    startDate: '2024-01-01T00:00:00Z',
+    endDate: '2025-12-31T23:59:59Z',
+    totalUses: 100,
+    usesPerUser: 1,
+    allowedUsers: 'all',
+    allowedProducts: 'all',
+    isActive: true,
+  },
+  {
+    id: '2',
+    code: 'COURSE50',
+    type: 'fixed-amount',
+    value: 50000,
+    startDate: '2024-01-01T00:00:00Z',
+    endDate: '2025-12-31T23:59:59Z',
+    totalUses: 1000,
+    usesPerUser: 1,
+    allowedUsers: 'all',
+    allowedProducts: ['1', '3'], // Specific to some exams
+    minPurchaseAmount: 100000,
+    isActive: true,
+  },
+  {
+    id: '3',
+    code: 'NEWYEAR',
+    type: 'percentage',
+    value: 15,
+    startDate: '2024-03-01T00:00:00Z',
+    endDate: '2024-03-31T23:59:59Z',
+    totalUses: 1000,
+    usesPerUser: 1,
+    allowedUsers: 'all',
+    allowedProducts: 'all',
+    isActive: false, // Inactive
+  },
+];
 
 const mockQuestions: Question[] = [
   {
@@ -350,6 +418,9 @@ export let mockUsers: User[] = [
     role: 'admin',
     registeredAt: '1402/10/01',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+    balance: 100000,
+    subscriptionType: 'premium',
+    autoRenew: true,
   },
   {
     id: '2',
@@ -358,6 +429,8 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/01/15',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+    balance: 50000,
+    subscriptionType: 'free',
   },
   {
     id: '3',
@@ -366,6 +439,7 @@ export let mockUsers: User[] = [
     role: 'teacher',
     registeredAt: '1402/11/20',
     avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+    balance: 25000,
   },
     {
     id: '4',
@@ -374,5 +448,6 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/02/05',
     avatar: 'https://i.pravatar.cc/150?u=a048581f4e29026701d',
+    balance: 0,
   },
 ];
