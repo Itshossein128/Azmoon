@@ -1,4 +1,26 @@
-import { User, Exam, Category, Result, Question } from '../../shared/types';
+import { User, Exam, Category, Result, Question, DiscountCode } from '../../shared/types';
+
+export const mockDiscountCodes: DiscountCode[] = [
+  {
+    id: '1',
+    code: 'BAHAR1403',
+    discountPercentage: 20,
+    validUntil: '2025-03-20T23:59:59Z',
+  },
+  {
+    id: '2',
+    code: 'SPECIALEXAM',
+    discountPercentage: 50,
+    validUntil: '2025-12-31T23:59:59Z',
+    examId: '1', // Specific to "آزمون جامع زبان انگلیسی"
+  },
+  {
+    id: '3',
+    code: 'EXPIRED',
+    discountPercentage: 90,
+    validUntil: '2020-01-01T23:59:59Z', // Expired code
+  },
+];
 
 const mockQuestions: Question[] = [
   {
@@ -350,6 +372,7 @@ export let mockUsers: User[] = [
     role: 'admin',
     registeredAt: '1402/10/01',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+    balance: 100000,
   },
   {
     id: '2',
@@ -358,6 +381,7 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/01/15',
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+    balance: 50000,
   },
   {
     id: '3',
@@ -366,6 +390,7 @@ export let mockUsers: User[] = [
     role: 'teacher',
     registeredAt: '1402/11/20',
     avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+    balance: 25000,
   },
     {
     id: '4',
@@ -374,5 +399,6 @@ export let mockUsers: User[] = [
     role: 'student',
     registeredAt: '1403/02/05',
     avatar: 'https://i.pravatar.cc/150?u=a048581f4e29026701d',
+    balance: 0,
   },
 ];
