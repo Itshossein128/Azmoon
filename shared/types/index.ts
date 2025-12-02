@@ -5,6 +5,7 @@ export interface User {
   avatar?: string;
   role: 'student' | 'teacher' | 'admin';
   registeredAt: string;
+  balance: number;
 }
 
 export interface Exam {
@@ -83,3 +84,23 @@ export interface Category {
 }
 
 export type QuestionType = 'multiple-choice' | 'multiple-answer' | 'fill-in-the-blank' | 'essay-with-upload' | 'true-false' | 'essay' | 'matching' | 'coding';
+
+export type DiscountType = 'percentage' | 'fixed-amount' | 'combined';
+
+export interface DiscountCode {
+  id: string;
+  code: string;
+  type: DiscountType;
+  value: number; // Percentage or fixed amount
+  maxValue?: number; // For percentage discounts
+  minValueForCombined?: number; // Threshold for combined discounts
+  combinedValue?: number; // Fixed amount for combined discounts below threshold
+  startDate: string; // ISO 8601 format
+  endDate: string; // ISO 8601 format
+  totalUses: number;
+  usesPerUser: number;
+  allowedUsers?: 'all' | 'new' | string[]; // 'all', 'new', or an array of user IDs
+  allowedProducts?: 'all' | 'subscriptions' | string[]; // 'all', 'subscriptions', or an array of exam IDs
+  minPurchaseAmount?: number;
+  isActive: boolean;
+}

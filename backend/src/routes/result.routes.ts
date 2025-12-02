@@ -18,7 +18,7 @@ if (!fs.existsSync(codeDir)) {
 
 const runCodeInSandbox = (filePath: string, language: string, testInput: string): Promise<{ output: string; error?: string }> => {
     return new Promise((resolve) => {
-        const command = language === 'javascript' ? 'node' --input-type=module -' : 'python';
+        const command = language === 'javascript' ? 'node' : 'python';
         const child = spawn(command, [filePath]);
         let output = '';
         let error = '';
@@ -180,7 +180,7 @@ router.post('/results', upload.any(), async (req, res) => {
             score += q.points;
             correctAnswers++;
         }
-    });
+    }
 
     const totalPossibleScore = exam.questions.reduce((total, q) => total + q.points, 0);
     const percentage = totalPossibleScore > 0 ? (score / totalPossibleScore) * 100 : 0;
