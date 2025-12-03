@@ -1,9 +1,11 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Settings, Folder, Database, FileCheck, Percent } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Settings, Folder, Database, FileCheck, Percent, BarChart, FileBarChart } from 'lucide-react';
 import Header from '../../components/layout/Header';
 
 const navItems = [
   { name: 'داشبورد', to: '/admin', icon: LayoutDashboard },
+  { name: 'آمار پیشرفته', to: '/admin/statistics', icon: BarChart },
+  { name: 'آمار سوالات', to: '/admin/question-stats', icon: FileBarChart },
   { name: 'مدیریت کاربران', to: '/admin/users', icon: Users },
   { name: 'مدیریت آزمون‌ها', to: '/admin/exams', icon: FileText },
   { name: 'بانک سوالات', to: '/admin/questions', icon: Database },
