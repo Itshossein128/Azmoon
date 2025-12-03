@@ -32,6 +32,7 @@ const GradeSubmission = lazy(() => import('../features/admin/GradeSubmission'));
 const CategoryManagement = lazy(() => import('../features/admin/CategoryManagement'));
 const DiscountManagement = lazy(() => import('../features/admin/DiscountManagement'));
 const Settings = lazy(() => import('../features/admin/Settings'));
+const StatisticsDashboard = lazy(() => import('../features/admin/StatisticsDashboard'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen items-center justify-center"><Spinner /></div>}>
@@ -91,6 +92,7 @@ export const router = createBrowserRouter([
           { path: 'grading/:id', element: <SuspenseWrapper><GradeSubmission /></SuspenseWrapper> },
           { path: 'categories', element: <SuspenseWrapper><CategoryManagement /></SuspenseWrapper> },
           { path: 'discounts', element: <SuspenseWrapper><DiscountManagement /></SuspenseWrapper> },
+          { path: 'statistics', element: <SuspenseWrapper><StatisticsDashboard /></SuspenseWrapper> },
           { path: 'settings', element: <SuspenseWrapper><Settings /></SuspenseWrapper> },
         ],
       },
