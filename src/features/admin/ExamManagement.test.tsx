@@ -78,4 +78,23 @@ describe('ExamManagement with QuestionSelector', () => {
     expect(screen.getByLabelText('تاریخ شروع')).toBeInTheDocument();
     expect(screen.getByLabelText('مدرس')).toBeInTheDocument();
   });
+
+  it('should fetch teacher-specific exams when teacherId is provided', async () => {
+    const teacherExams = [{ id: 't1', title: 'Teacher Exam', category: 'Category B', level: 'Medium', questions: [] }];
+    mockedAxios.get.mockImplementation((url) => {
+      if (url.includes('/teacher/teacher-123/exams')) return Promise.resolve({ data: teacherExams });
+      if (url.endsWith('/questions')) return Promise.resolve({ data: mockQuestions });
+      if (url.endsWith('/categories')) return Promise.resolve({ data: mockCategories });
+      return Promise.reject(new Error('not found'));
+    });
+
+    renderWithRouter(<ExamManagement teacherId="teacher-123" />);
+
+    // Wait for the teacher's exam to be rendered
+    expect(await screen.findByText('Teacher Exam')).toBeInTheDocument();
+    // Ensure the general exam is not rendered
+    expect(screen.queryByText('Exam 1')).not.toBeInTheDocument();
+    // Verify the correct URL was called
+    expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('/teacher/teacher-123/exams'));
+  });
 });

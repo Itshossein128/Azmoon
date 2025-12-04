@@ -11,7 +11,11 @@ import Alert from '../../components/ui/Alert';
 import { API_URL } from '../../config/api';
 import QuestionSelector from './components/QuestionSelector';
 
-export default function ExamManagement() {
+interface ExamManagementProps {
+  teacherId?: string;
+}
+
+export default function ExamManagement({ teacherId }: ExamManagementProps) {
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +33,9 @@ export default function ExamManagement() {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const examsUrl = teacherId ? `${API_URL}/teacher/${teacherId}/exams` : `${API_URL}/exams`;
       const [examsRes, categoriesRes] = await Promise.all([
-        axios.get(`${API_URL}/exams`),
+        axios.get(examsUrl),
         axios.get(`${API_URL}/categories`),
       ]);
       setExams(examsRes.data);
@@ -99,9 +104,11 @@ export default function ExamManagement() {
       totalQuestions: selectedQuestionIds.length,
     };
 
+    const finalExamData = { ...examData, teacherId };
+
     try {
       if (modalMode === 'add') {
-        await axios.post(`${API_URL}/exams`, examData);
+        await axios.post(`${API_URL}/exams`, finalExamData);
       } else if (modalMode === 'edit' && currentExam) {
         await axios.put(`${API_URL}/exams/${currentExam.id}`, examData);
       }

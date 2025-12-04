@@ -20,11 +20,12 @@ export default function Login() {
     setError(null);
 
     try {
-      await login(email, password);
-      // Redirect based on role, or to a default page
-      // This is a simplified example.
-      if (email.startsWith('admin')) {
+      const user = await login(email, password);
+
+      if (user.role === 'admin') {
         navigate('/admin');
+      } else if (user.role === 'teacher') {
+        navigate('/teacher');
       } else {
         navigate('/');
       }
