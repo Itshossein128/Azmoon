@@ -1,10 +1,11 @@
 import { useState, useEffect, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
 import { User } from '../../../shared/types';
-import { Eye, FilePenLine, Trash2, Search, PlusCircle } from 'lucide-react';
+import { Eye, FilePenLine, Trash2, Search, PlusCircle, BarChart } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
@@ -203,6 +204,9 @@ export default function UserManagement() {
                 <td className="p-4">{user.registeredAt}</td>
                 <td className="p-4">
                   <div className="flex gap-3">
+                    <Link to={`/admin/student-report/${user.id}`} className="text-gray-500 hover:text-green-500 transition-colors">
+                      <BarChart size={20} />
+                    </Link>
                     <button onClick={() => openViewModal(user)} className="text-gray-500 hover:text-blue-500 transition-colors">
                       <Eye size={20} />
                     </button>

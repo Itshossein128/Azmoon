@@ -26,13 +26,16 @@ export default function Register() {
     setLoading(true);
     setError(null);
 
+    const form = e.target as HTMLFormElement;
+    const role = (form.elements.namedItem('role') as RadioNodeList).value;
+
     // Mock registration
     setTimeout(() => {
       login({
         id: '1',
         name,
         email,
-        role: 'student',
+        role: role as 'student' | 'teacher' | 'admin',
         registeredAt: new Date().toISOString(),
       });
       navigate('/');
@@ -161,6 +164,20 @@ export default function Register() {
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">ثبت‌نام به عنوان</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="role" value="student" defaultChecked className="form-radio text-primary-600"/>
+                    دانشجو
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="role" value="teacher" className="form-radio text-primary-600"/>
+                    مدرس
+                  </label>
+                </div>
               </div>
 
               {error && <p className="text-red-500 text-sm">{error}</p>}

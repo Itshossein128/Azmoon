@@ -1,5 +1,5 @@
 import express from 'express';
-import { mockExams, mockAllQuestions } from '../data';
+import { mockExams, mockAllQuestions, mockUsers } from '../data';
 import { Exam, Question } from '../../../shared/types';
 import crypto from 'crypto';
 
@@ -8,6 +8,20 @@ const router = express.Router();
 // Get all exams
 router.get('/exams', (req, res) => {
   res.json(mockExams);
+});
+
+// Get exams for a specific teacher
+router.get('/teacher/:teacherId/exams', (req, res) => {
+  const { teacherId } = req.params;
+  // In a real app, you'd check the user's ID against the exam's owner.
+  // Here, we'll filter based on the instructor's name for simplicity.
+  const teacher = mockUsers.find(u => u.id === teacherId);
+  if (teacher) {
+    const teacherExams = mockExams.filter(exam => exam.instructor === teacher.name);
+    res.json(teacherExams);
+  } else {
+    res.status(404).send('Teacher not found');
+  }
 });
 
 // Get exam by id
@@ -22,13 +36,22 @@ router.get('/exams/:id', (req, res) => {
 
 // Create exam
 router.post('/exams', (req, res) => {
-    const { questions, ...examData } = req.body;
+    const { questions, teacherId, ...examData } = req.body;
     const questionIds = questions.map((q: Partial<Question>) => q.id);
     const fullQuestions = mockAllQuestions.filter(q => questionIds.includes(q.id));
+
+    let instructorName = examData.instructor;
+    if (teacherId) {
+      const teacher = mockUsers.find(u => u.id === teacherId);
+      if (teacher) {
+        instructorName = teacher.name;
+      }
+    }
 
     const newExam: Exam = {
         id: crypto.randomUUID(),
         ...examData,
+        instructor: instructorName,
         questions: fullQuestions,
         totalQuestions: fullQuestions.length,
     };
