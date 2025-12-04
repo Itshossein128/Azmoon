@@ -1,27 +1,20 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Settings, Folder, Database, FileCheck, Percent, BarChart, FileBarChart, AreaChart } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings } from 'lucide-react';
 import Header from '../../components/layout/Header';
 
 const navItems = [
-  { name: 'داشبورد', to: '/admin', icon: LayoutDashboard },
-  { name: 'آمار پیشرفته', to: '/admin/statistics', icon: BarChart },
-  { name: 'آمار سوالات', to: '/admin/question-stats', icon: FileBarChart },
-  { name: 'گزارش مالی', to: '/admin/financial-report', icon: AreaChart },
-  { name: 'مدیریت کاربران', to: '/admin/users', icon: Users },
-  { name: 'مدیریت آزمون‌ها', to: '/admin/exams', icon: FileText },
-  { name: 'بانک سوالات', to: '/admin/questions', icon: Database },
-  { name: 'تصحیح آزمون‌ها', to: '/admin/grading', icon: FileCheck },
-  { name: 'مدیریت دسته‌بندی‌ها', to: '/admin/categories', icon: Folder },
-  { name: 'کدهای تخفیف', to: '/admin/discounts', icon: Percent },
-  { name: 'تنظیمات', to: '/admin/settings', icon: Settings },
+  { name: 'داشبورد', to: '/teacher', icon: LayoutDashboard },
+  { name: 'آزمون‌های من', to: '/teacher/exams', icon: FileText },
+  { name: 'دانشجویان من', to: '/teacher/students', icon: Users },
+  { name: 'تنظیمات', to: '/teacher/settings', icon: Settings },
 ];
 
-export default function AdminLayout() {
+export default function TeacherLayout() {
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <aside className="w-64 bg-white dark:bg-gray-800 shadow-md">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-primary-500">پنل ادمین</h1>
+          <h1 className="text-2xl font-bold text-primary-500">پنل مدرس</h1>
         </div>
         <nav className="mt-6">
           {navItems.map((item) => (
