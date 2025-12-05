@@ -22,6 +22,7 @@ const ForgotPassword = lazy(() => import('../features/auth/ForgotPassword'));
 const PrivateRoute = lazy(() => import('./PrivateRoute'));
 const PublicRoute = lazy(() => import('./PublicRoute'));
 const AdminRoute = lazy(() => import('./AdminRoute'));
+const TeacherRoute = lazy(() => import('./TeacherRoute'));
 const AdminLayout = lazy(() => import('../features/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('../features/admin/AdminDashboard'));
 const UserManagement = lazy(() => import('../features/admin/UserManagement'));
@@ -32,6 +33,15 @@ const GradeSubmission = lazy(() => import('../features/admin/GradeSubmission'));
 const CategoryManagement = lazy(() => import('../features/admin/CategoryManagement'));
 const DiscountManagement = lazy(() => import('../features/admin/DiscountManagement'));
 const Settings = lazy(() => import('../features/admin/Settings'));
+const StatisticsDashboard = lazy(() => import('../features/admin/StatisticsDashboard'));
+const StudentPerformanceReport = lazy(() => import('../features/admin/StudentPerformanceReport'));
+const QuestionStats = lazy(() => import('../features/admin/QuestionStats'));
+const FinancialReport = lazy(() => import('../features/admin/FinancialReport'));
+const TeacherLayout = lazy(() => import('../features/teacher/TeacherLayout'));
+const TeacherDashboard = lazy(() => import('../features/teacher/TeacherDashboard'));
+const TeacherExamManagement = lazy(() => import('../features/teacher/TeacherExamManagement'));
+const TeacherStudentManagement = lazy(() => import('../features/teacher/TeacherStudentManagement'));
+const TeacherStudentResults = lazy(() => import('../features/teacher/TeacherStudentResults'));
 
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="flex h-screen items-center justify-center"><Spinner /></div>}>
@@ -91,7 +101,27 @@ export const router = createBrowserRouter([
           { path: 'grading/:id', element: <SuspenseWrapper><GradeSubmission /></SuspenseWrapper> },
           { path: 'categories', element: <SuspenseWrapper><CategoryManagement /></SuspenseWrapper> },
           { path: 'discounts', element: <SuspenseWrapper><DiscountManagement /></SuspenseWrapper> },
+          { path: 'statistics', element: <SuspenseWrapper><StatisticsDashboard /></SuspenseWrapper> },
+          { path: 'question-stats', element: <SuspenseWrapper><QuestionStats /></SuspenseWrapper> },
+          { path: 'financial-report', element: <SuspenseWrapper><FinancialReport /></SuspenseWrapper> },
+          { path: 'student-report/:userId', element: <SuspenseWrapper><StudentPerformanceReport /></SuspenseWrapper> },
           { path: 'settings', element: <SuspenseWrapper><Settings /></SuspenseWrapper> },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/teacher',
+    element: <SuspenseWrapper><TeacherRoute /></SuspenseWrapper>,
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        element: <SuspenseWrapper><TeacherLayout /></SuspenseWrapper>,
+        children: [
+          { index: true, element: <SuspenseWrapper><TeacherDashboard /></SuspenseWrapper> },
+          { path: 'exams', element: <SuspenseWrapper><TeacherExamManagement /></SuspenseWrapper> },
+          { path: 'students', element: <SuspenseWrapper><TeacherStudentManagement /></SuspenseWrapper> },
+          { path: 'students/:studentId', element: <SuspenseWrapper><TeacherStudentResults /></SuspenseWrapper> },
         ],
       },
     ],
